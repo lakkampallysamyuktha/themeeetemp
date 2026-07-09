@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Discover – PodStream</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+  <style>
+    /* CSS Variables & Utilities */
+    :root { --primary-color:#A85BD8; --bg-color:#1F2430; --text-color:#FFFFFF; --glass-bg:rgba(255,255,255,0.05); --glass-border:rgba(255,255,255,0.1); }
+    body { padding-bottom:0 !important; overflow-x:hidden; background:var(--bg-color); color:var(--text-color); font-family:'Inter',sans-serif; margin:0; }
+    .container { max-width:1200px; margin:0 auto; padding:0 24px; }
+    .section-title { text-align:center; font-size:clamp(2rem,4vw,2.8rem); font-weight:800; margin-bottom:50px; position:relative; }
+    .section-title span { color:var(--primary-color); }
+    .section-title::after { content:''; display:block; width:64px; height:4px; background:var(--primary-color); border-radius:4px; margin:14px auto 0; }
+    
+    /* Buttons */
+    .btn { display:inline-flex; align-items:center; gap:8px; padding:14px 28px; border-radius:50px; font-weight:600; cursor:pointer; border:none; text-decoration:none; transition:transform 0.25s,box-shadow 0.25s; }
+    .btn:hover { transform:translateY(-3px); }
+    .btn-primary { background:var(--primary-color); color:#fff; box-shadow:0 4px 20px rgba(168,91,216,0.35); }
+    .btn-primary:hover { box-shadow:0 8px 30px rgba(168,91,216,0.55); }
+    .btn-outline { background:transparent; color:#fff; border:2px solid rgba(255,255,255,0.25); }
+    .btn-outline:hover { border-color:var(--primary-color); color:#111 !important; background:var(--primary-color); }
+    
+    /* Hero Banner (Untouched) */
+    .pods-hero { position:relative; min-height:70vh; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+    .pods-hero__bg { position:absolute; inset:0; background-image:url('images/unsplash_158990330890_4dc0908d.webp'); background-size:cover; background-position:center; filter:blur(3px) brightness(0.35); transform:scale(1.08); }
+    .pods-hero__overlay { position:absolute; inset:0; background:linear-gradient(135deg,rgba(31,36,48,0.92) 0%,rgba(168,91,216,0.18) 50%,rgba(31,36,48,0.95) 100%); }
+    .pods-hero__content { position:relative; z-index:2; text-align:center; max-width:780px; padding:2rem 1.5rem; width:100%; }
+    .pods-hero__title { font-size:clamp(2rem,5vw,3.6rem); font-weight:800; line-height:1.15; letter-spacing:-0.5px; opacity:0; transform:translateY(40px); margin-bottom:1rem; animation:fadeInUp 0.8s forwards 0.2s; }
+    .pods-hero__title .highlight { color:var(--primary-color); text-shadow:0 0 30px rgba(168,91,216,0.6); }
+    .pods-hero__subtitle { font-size:clamp(1rem,2vw,1.25rem); color:rgba(255,255,255,0.75); margin-bottom:2.2rem; opacity:0; transform:translateY(30px); animation:fadeInUp 0.8s forwards 0.4s; }
+    .pods-badge { position:absolute; z-index:3; padding:0.45rem 1.1rem; border-radius:50px; font-size:0.72rem; font-weight:700; letter-spacing:1.5px; backdrop-filter:blur(12px); border:1px solid rgba(255,255,255,0.18); animation:badgeFloat 3.5s ease-in-out infinite; white-space:nowrap; }
+    .pods-badge--new { top:22%; left:8%; background:rgba(168,91,216,0.3); color:var(--primary-color); animation-delay:0s; }
+    @keyframes badgeFloat { 0%,100%{transform:translateY(0px);} 50%{transform:translateY(-12px);} }
+    @keyframes fadeInUp { to{opacity:1;transform:translateY(0);} }
+    .pods-waveform { position:absolute; bottom:18px; left:50%; transform:translateX(-50%); z-index:3; display:flex; align-items:flex-end; gap:4px; height:40px; }
+    .pods-waveform span { display:block; width:4px; border-radius:2px; background:rgba(168,91,216,0.7); animation:waveBar 1.2s ease-in-out infinite; }
+    .pods-waveform span:nth-child(1){height:12px;animation-delay:0s;} .pods-waveform span:nth-child(2){height:24px;animation-delay:0.1s;}
+    .pods-waveform span:nth-child(3){height:36px;animation-delay:0.2s;} .pods-waveform span:nth-child(4){height:28px;animation-delay:0.3s;}
+    .pods-waveform span:nth-child(5){height:18px;animation-delay:0.4s;} .pods-waveform span:nth-child(6){height:38px;animation-delay:0.15s;}
+    .pods-waveform span:nth-child(7){height:22px;animation-delay:0.25s;} .pods-waveform span:nth-child(8){height:32px;animation-delay:0.05s;}
+    .pods-waveform span:nth-child(9){height:16px;animation-delay:0.35s;} .pods-waveform span:nth-child(10){height:26px;animation-delay:0.45s;}
+    .pods-waveform span:nth-child(11){height:38px;animation-delay:0.1s;} .pods-waveform span:nth-child(12){height:20px;animation-delay:0.2s;}
+    .pods-waveform span:nth-child(13){height:30px;animation-delay:0.3s;}
+    @keyframes waveBar { 0%,100%{transform:scaleY(1);opacity:0.7;} 50%{transform:scaleY(0.35);opacity:1;} }
+    
+    /* SECTION 2: Curated Discoveries (Redesigned Auto Scroll Straight Line) */
+    .curated-discoveries-sec { padding:120px 0; background: linear-gradient(180deg, rgba(31,36,48,1) 0%, rgba(20,24,33,1) 100%); overflow: hidden; }
+    .curated-swiper { width: 100%; padding: 20px 0 50px 0; }
+    .curated-card { position:relative; border-radius:24px; overflow:hidden; background:rgba(255,255,255,0.02); border:1px solid rgba(255,255,255,0.05); box-shadow:0 20px 40px rgba(0,0,0,0.4); display:flex; flex-direction:column; transition:transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease; text-decoration:none; color:inherit; height: 100%; }
+    .curated-card:hover { transform:translateY(-8px); box-shadow:0 30px 60px rgba(168,91,216,0.2), 0 0 0 1px rgba(168,91,216,0.3); border-color:rgba(168,91,216,0.4); }
+    .curated-img-wrap { position:relative; width:100%; aspect-ratio:16/10; overflow:hidden; }
+    .curated-img { width:100%; height:100%; object-fit:cover; transition:transform 0.8s cubic-bezier(0.25, 1, 0.5, 1), filter 0.4s ease; filter:brightness(0.85); }
+    .curated-card:hover .curated-img { transform:scale(1.1); filter:brightness(1); }
+    
+    .curated-play-overlay { position:absolute; inset:0; background:rgba(0,0,0,0.4); display:flex; align-items:center; justify-content:center; opacity:0; transition:opacity 0.4s ease; }
+    .curated-card:hover .curated-play-overlay { opacity:1; }
+    
+    .curated-play-btn { width:60px; height:60px; border-radius:50%; background:var(--primary-color); display:flex; align-items:center; justify-content:center; box-shadow:0 0 30px rgba(168,91,216,0.8); transform:scale(0.8); transition:transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .curated-play-btn i { font-size:2rem; color:#fff; margin-left:4px; }
+    .curated-card:hover .curated-play-btn { transform:scale(1); }
+    
+    .curated-body { padding:24px; display:flex; flex-direction:column; flex-grow:1; }
+    .curated-cat-tag { background:rgba(168,91,216,0.15); border:1px solid rgba(168,91,216,0.3); color:var(--primary-color); font-size:0.75rem; font-weight:700; text-transform:uppercase; padding:4px 14px; border-radius:50px; align-self:flex-start; margin-bottom:14px; backdrop-filter:blur(8px); }
+    .curated-title { font-size:1.4rem; font-weight:800; line-height:1.3; margin:0 0 12px 0; color:#fff; transition:color 0.3s ease; }
+    .curated-card:hover .curated-title { color:var(--primary-color); }
+    
+    .curated-meta { display:flex; gap:16px; font-size:0.85rem; color:rgba(255,255,255,0.6); margin-top:auto; border-top:1px solid rgba(255,255,255,0.05); padding-top:16px; }
+    .curated-meta span { display:flex; align-items:center; gap:6px; }
+    .curated-meta span i { font-size:1.1rem; color:var(--primary-color); }
+
+    /* SECTION 3: Explore Categories (Large Image Tiles) */
+    .explore-tiles-sec { padding:120px 0; background:rgba(255,255,255,0.02); }
+    .cat-tiles-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:20px; }
+    .cat-tile { position:relative; height:320px; border-radius:20px; overflow:hidden; cursor:pointer; }
+    .cat-tile-img { width:100%; height:100%; object-fit:cover; transition:transform 0.6s ease; opacity:0.75; }
+    .cat-tile-overlay { position:absolute; inset:0; background:linear-gradient(to top, rgba(31,36,48,0.9) 0%, rgba(168,91,216,0.1) 100%); transition:background 0.4s; display:flex; flex-direction:column; justify-content:center; align-items:center; text-align:center; padding:20px; }
+    .cat-tile:hover .cat-tile-img { transform:scale(1.1); }
+    .cat-tile:hover .cat-tile-overlay { background:linear-gradient(to top, rgba(168,91,216,0.9) 0%, rgba(31,36,48,0.4) 100%); }
+    .cat-icon { font-size:3rem; margin-bottom:15px; color:rgba(255,255,255,0.8); transition:transform 0.4s, color 0.4s; }
+    .cat-tile:hover .cat-icon { transform:translateY(-10px); color:#fff; }
+    .cat-title { font-size:1.6rem; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; transition:transform 0.4s; }
+    .cat-tile:hover .cat-title { transform:translateY(-5px); }
+    .cat-count { opacity:0; font-size:0.9rem; font-weight:600; color:rgba(255,255,255,0.8); transform:translateY(20px); transition:all 0.4s ease; background:rgba(0,0,0,0.3); padding:5px 15px; border-radius:50px; backdrop-filter:blur(5px); }
+    .cat-tile:hover .cat-count { opacity:1; transform:translateY(0); }
+
+    /* SECTION 4: Editor's Picks (Magazine) */
+    .mag-sec { padding:120px 0; }
+    .mag-layout { display:grid; grid-template-columns:1.3fr 1fr; gap:40px; align-items:center; }
+    .mag-featured { position:relative; border-radius:24px; overflow:hidden; box-shadow:0 30px 60px rgba(0,0,0,0.6); min-height:600px; cursor:pointer; }
+    .mag-f-img { width:100%; height:100%; position:absolute; object-fit:cover; transition:transform 8s ease; }
+    .mag-featured:hover .mag-f-img { transform:scale(1.1); }
+    .mag-f-overlay { position:absolute; inset:0; background:linear-gradient(to right, rgba(0,0,0,0.9) 0%, transparent 100%); }
+    .mag-f-content { position:absolute; bottom:0; left:0; width:80%; padding:50px; }
+    .mag-badge { background:var(--primary-color); color:#fff; padding:6px 16px; border-radius:4px; font-weight:800; font-size:0.75rem; text-transform:uppercase; display:inline-block; margin-bottom:20px; letter-spacing:1px; }
+    .mag-f-title { font-size:3rem; font-weight:900; line-height:1.1; margin-bottom:15px; }
+    .mag-f-desc { font-size:1.1rem; color:rgba(255,255,255,0.7); margin-bottom:25px; line-height:1.6; }
+    .mag-side { display:flex; flex-direction:column; gap:20px; }
+    .mag-card { display:flex; background:var(--glass-bg); border:1px solid var(--glass-border); border-radius:16px; overflow:hidden; cursor:pointer; transition:all 0.3s; padding:15px; gap:20px; align-items:center; }
+    .mag-card:hover { transform:translateX(-10px); background:rgba(168,91,216,0.1); border-color:rgba(168,91,216,0.3); }
+    .mag-card:hover .mag-c-img { transform:scale(1.1); }
+    .mag-c-img { width:120px; height:120px; border-radius:12px; object-fit:cover; flex-shrink:0; transition:transform 0.4s ease; }
+    .mag-c-content { flex:1; }
+    .mag-c-title { font-size:1.2rem; font-weight:700; margin-bottom:8px; line-height:1.3; }
+    .mag-meta { font-size:0.8rem; color:rgba(255,255,255,0.5); display:flex; gap:10px; }
+
+    /* SECTION 5: Creator Spotlight (Interactive Split) */
+    .c-split-sec { padding: 120px 0; background: rgba(255,255,255,0.02); }
+    .c-split-layout { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; align-items: start; }
+    .c-list { display: flex; flex-direction: column; gap: 15px; }
+    .c-list-item { display: flex; align-items: center; gap: 20px; padding: 15px 20px; background: var(--glass-bg); border-radius: 16px; cursor: pointer; transition: all 0.3s ease; border: 1px solid transparent; }
+    .c-list-item:hover { background: rgba(255,255,255,0.1); }
+    .c-list-item.active { background: rgba(168,91,216,0.15); border-color: rgba(168,91,216,0.3); box-shadow: 0 10px 20px rgba(0,0,0,0.2); }
+    .c-list-item img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; }
+    .c-list-info h3 { font-size: 1.2rem; margin-bottom: 4px; }
+    .c-list-info p { font-size: 0.9rem; color: rgba(255,255,255,0.6); }
+    
+    .c-preview { position: sticky; top: 120px; background: linear-gradient(145deg, rgba(31,36,48,0.9), rgba(0,0,0,0.8)); border: 1px solid rgba(168,91,216,0.2); border-radius: 24px; padding: 40px; display: grid; grid-template-columns: 1fr 1fr; gap: 40px; align-items: center; box-shadow: 0 30px 60px rgba(0,0,0,0.5); overflow: hidden; min-height: 480px; }
+    .c-preview-img-wrapper { position: relative; width: 100%; height: 100%; min-height: 400px; border-radius: 16px; overflow: hidden; }
+    .c-preview:hover .c-preview-img { transform: scale(1.05); }
+    .c-preview-img { width: 100%; height: 100%; object-fit: cover; transition: opacity 0.4s ease, transform 0.6s ease; }
+    .c-preview-img.is-animating { opacity: 0; transform: scale(0.95); }
+    
+    .c-preview-content { display: flex; flex-direction: column; justify-content: center; transition: opacity 0.4s ease, transform 0.4s ease; }
+    .c-preview-content.is-animating { opacity: 0; transform: translateX(20px); }
+    
+    .c-preview-role { color: var(--primary-color); font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; display: block; }
+    .c-preview-name { font-size: 2.8rem; font-weight: 900; line-height: 1.1; margin-bottom: 25px; }
+    .c-preview-desc { font-size: 1.05rem; line-height: 1.6; color: rgba(255,255,255,0.7); margin-bottom: 40px; font-style: italic; border-left: 3px solid var(--primary-color); padding-left: 20px; }
+    
+    .c-stat-row { margin-bottom: 20px; }
+    .c-stat-header { display: flex; justify-content: space-between; font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 8px; letter-spacing: 1px; }
+    .c-stat-bar { height: 6px; background: rgba(255,255,255,0.1); border-radius: 3px; overflow: hidden; }
+    .c-stat-fill { height: 100%; border-radius: 3px; transition: width 1s cubic-bezier(0.16, 1, 0.3, 1); }
+
+    @media (max-width: 1024px) {
+      .c-split-layout { grid-template-columns: 1fr; }
+      .c-preview { grid-template-columns: 1fr; text-align: center; }
+      .c-preview-desc { border-left: none; border-top: 3px solid var(--primary-color); padding-left: 0; padding-top: 20px; margin-top: 20px; }
+    }
+
+    /* SECTION 6: Discover More (Cinematic CTA) */
+    .cta-sec { padding:140px 0; }
+    .cta-banner { position:relative; border-radius:40px; padding:100px 40px; text-align:center; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.8); background:#111; }
+    .cta-bg { position:absolute; inset:0; background:url('images/unsplash_151877066043_ecf13dd9.webp') center/cover; opacity:0.3; filter:blur(4px); }
+    .cta-glow { position:absolute; top:50%; left:50%; transform:translate(-50%,-50%); width:600px; height:600px; background:radial-gradient(circle, rgba(168,91,216,0.4) 0%, transparent 70%); pointer-events:none; }
+    .cta-content { position:relative; z-index:3; }
+    .cta-title { font-size:clamp(3rem,6vw,4.5rem); font-weight:900; line-height:1.1; margin-bottom:30px; text-shadow:0 10px 30px rgba(0,0,0,0.8); }
+    .cta-buttons { display:flex; justify-content:center; gap:20px; }
+    .btn-magnetic { position:relative; overflow:hidden; transition:transform 0.3s cubic-bezier(0.175,0.885,0.32,1.275); padding:16px 36px; font-size:1.1rem; }
+    .btn-magnetic::after { content:''; position:absolute; top:50%; left:50%; width:300px; height:300px; background:rgba(255,255,255,0.2); border-radius:50%; transform:translate(-50%,-50%) scale(0); transition:transform 0.6s ease; pointer-events:none; }
+    .btn-magnetic:hover::after { transform:translate(-50%,-50%) scale(1); }
+    .cta-waveform { position:absolute; bottom:0; left:0; right:0; height:80px; display:flex; align-items:flex-end; justify-content:center; gap:4px; opacity:0.4; }
+    .cta-waveform span { width:4px; background:var(--primary-color); border-radius:4px 4px 0 0; animation:wf 1s infinite alternate; }
+    .cta-waveform span:nth-child(even) { animation-duration:0.8s; }
+    .cta-waveform span:nth-child(3n) { animation-duration:1.2s; }
+    @keyframes wf { 0%{height:20px;} 100%{height:80px;} }
+
+    /* Scroll Animations */
+    .fade-up-element, .zoom-in-element, .fade-left-element, .fade-right-element { opacity:0; transition:opacity 0.8s ease, transform 0.8s cubic-bezier(0.16,1,0.3,1); }
+    .fade-up-element { transform:translateY(50px); }
+    .zoom-in-element { transform:scale(0.85); }
+    .fade-left-element { transform:translateX(-50px); }
+    .fade-right-element { transform:translateX(50px); }
+    .fade-up-element.is-visible, .zoom-in-element.is-visible, .fade-left-element.is-visible, .fade-right-element.is-visible { opacity:1; transform:none; }
+
+    /* Responsive */
+    @media (max-width:1024px) {
+      .curated-grid { grid-template-columns:repeat(2,1fr); }
+      .cat-tiles-grid { grid-template-columns:repeat(2,1fr); }
+      .mag-layout { grid-template-columns:1fr; }
+      .masonry-grid { column-count:2; }
+    }
+    @media (max-width:768px) {
+      .curated-grid { grid-template-columns:1fr; }
+      .cat-tiles-grid { grid-template-columns:1fr; }
+      .masonry-grid { column-count:1; }
+      .cta-buttons { flex-direction:column; }
+      .mag-f-content { width: 100%; padding: 15px; box-sizing: border-box; }
+      .mag-f-title { font-size: 1.5rem; word-break: break-word; hyphens: auto; }
+      .mag-featured { min-height: 350px; }
+      .mag-f-desc { font-size: 0.95rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Shared Header -->
+  <header class="header glass">
+    <nav class="nav-container">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="video-podcasts.html">Video Podcasts</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="discover.html" class="active">Discover</a></li>
+        <li class="mobile-login"><a href="login.html" class="btn btn-primary" style="margin-top: 15px; width: 100%; justify-content: center;">Login</a></li>
+             </ul>
+      <div class="nav-actions">
+        <a href="404.html" style="color:inherit;"><i class="material-icons">search</i></a>
+        <a href="404.html" style="color:inherit;"><i class="material-icons">notifications</i></a>
+        <a href="404.html"><img src="images/woman_44_11c69897.webp" alt="User" class="user-profile" loading="lazy"></a>
+        <a href="login.html" class="btn btn-primary">Login</a>
+      </div>
+      <i class="material-icons hamburger">menu</i>
+    </nav>
+  </header>
+
+  <!-- Section 1: Hero Banner -->
+  <section class="pods-hero">
+    <div class="pods-hero__bg"></div>
+    <div class="pods-hero__overlay"></div>
+    <div class="pods-badge pods-badge--new">
+      <i class="material-icons" style="font-size:0.75rem;vertical-align:middle;">auto_awesome</i>
+      &nbsp;ABOUT PODSTREAM
+    </div>
+    <div class="pods-hero__content">
+      <h1 class="pods-hero__title" id="hero-title">
+        The <span class="highlight">Voice</span> of a New Generation
+      </h1>
+      <p class="pods-hero__subtitle" id="hero-sub">
+        PodStream is where stories are born, ideas spread, and communities unite. We're rewriting the rules of audio storytelling.
+      </p>
+    </div>
+    <div class="pods-waveform" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- Section 2: Curated Discoveries (Redesigned Auto Scroll Straight Line) -->
+  <section class="curated-discoveries-sec">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Curated <span>Discoveries</span></h2>
+      <div class="swiper curated-swiper fade-up-element">
+        <div class="swiper-wrapper">
+          
+          <!-- Slide 1 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_158990330890_4dc0908d.webp" class="curated-img" alt="Tech">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Technology</span>
+                <h3 class="curated-title">The Future of AI & Robotics</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.9 Rating</span>
+                  <span><i class="material-icons">mic</i> 142 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 2 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_150471143496_d1595803.webp" class="curated-img" alt="Science">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Science</span>
+                <h3 class="curated-title">Quantum Reality & Multiverse</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.8 Rating</span>
+                  <span><i class="material-icons">mic</i> 96 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 3 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_151262177695_563b419d.webp" class="curated-img" alt="Health">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Health</span>
+                <h3 class="curated-title">Biohacking Sleep & Recovery</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.7 Rating</span>
+                  <span><i class="material-icons">mic</i> 89 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 4 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_161153273659_7b630a48.webp" class="curated-img" alt="Business">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Business</span>
+                <h3 class="curated-title">Startup Scaling Secrets</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.9 Rating</span>
+                  <span><i class="material-icons">mic</i> 210 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 5 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_151877066043_6de5278e.webp" class="curated-img" alt="Design">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Design</span>
+                <h3 class="curated-title">Creative Minds & Industry Icons</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.8 Rating</span>
+                  <span><i class="material-icons">mic</i> 75 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <!-- Slide 6 -->
+          <div class="swiper-slide">
+            <a href="404.html" class="curated-card">
+              <div class="curated-img-wrap">
+                <img src="images/unsplash_150741324516_b2f6c907.webp" class="curated-img" alt="Psychology">
+                <div class="curated-play-overlay">
+                  <div class="curated-play-btn"><i class="material-icons">play_arrow</i></div>
+                </div>
+              </div>
+              <div class="curated-body">
+                <span class="curated-cat-tag">Psychology</span>
+                <h3 class="curated-title">The Inner Self & Human Behavior</h3>
+                <div class="curated-meta">
+                  <span><i class="material-icons">star</i> 4.9 Rating</span>
+                  <span><i class="material-icons">mic</i> 52 Episodes</span>
+                </div>
+              </div>
+            </a>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 3: Explore Categories (Large Tiles) -->
+  <section class="explore-tiles-sec">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Explore <span>Categories</span></h2>
+      <div class="cat-tiles-grid">
+        
+        <div class="cat-tile zoom-in-element">
+          <img src="images/unsplash_151877066043_b8c8f420.webp" class="cat-tile-img" alt="Technology">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">computer</i>
+            <h3 class="cat-title">Technology</h3>
+            <span class="cat-count">2,400+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.1s">
+          <img src="images/unsplash_150767979998_b1e46b58.webp" class="cat-tile-img" alt="Business">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">trending_up</i>
+            <h3 class="cat-title">Business</h3>
+            <span class="cat-count">1,850+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.2s">
+          <img src="images/unsplash_150612661340_06c38cb2.webp" class="cat-tile-img" alt="Health">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">favorite</i>
+            <h3 class="cat-title">Health</h3>
+            <span class="cat-count">1,200+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.3s">
+          <img src="images/unsplash_152722485783_48b50f84.webp" class="cat-tile-img" alt="Comedy">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">mood</i>
+            <h3 class="cat-title">Comedy</h3>
+            <span class="cat-count">3,100+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element">
+          <img src="images/unsplash_150367626072_11a11495.webp" class="cat-tile-img" alt="Education">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">school</i>
+            <h3 class="cat-title">Education</h3>
+            <span class="cat-count">900+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.1s">
+          <img src="images/unsplash_153174602079_73d31b5e.webp" class="cat-tile-img" alt="Science">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">science</i>
+            <h3 class="cat-title">Science</h3>
+            <span class="cat-count">1,150+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.2s">
+          <img src="images/unsplash_146189683693_4de20af1.webp" class="cat-tile-img" alt="Sports">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">sports_basketball</i>
+            <h3 class="cat-title">Sports</h3>
+            <span class="cat-count">2,200+ Shows</span>
+          </div>
+        </div>
+
+        <div class="cat-tile zoom-in-element" style="transition-delay:0.3s">
+          <img src="images/unsplash_150679477820_f6fc88d5.webp" class="cat-tile-img" alt="News">
+          <div class="cat-tile-overlay">
+            <i class="material-icons cat-icon">public</i>
+            <h3 class="cat-title">News</h3>
+            <span class="cat-count">1,600+ Shows</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 4: Editor's Picks (Magazine) -->
+  <section class="mag-sec">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Editor's <span>Picks</span></h2>
+      <div class="mag-layout">
+        
+        <div class="mag-featured fade-left-element">
+          <img src="images/unsplash_159848803513_2f0850b4.webp" class="mag-f-img" alt="Featured">
+          <div class="mag-f-overlay"></div>
+          <div class="mag-f-content">
+            <span class="mag-badge">Must Listen</span>
+            <h3 class="mag-f-title">The Mastermind<br>Interviews</h3>
+            <p class="mag-f-desc">An exclusive 10-part series diving deep into the minds of the world's most successful entrepreneurs and visionaries.</p>
+            <div class="mag-meta"><span><i class="material-icons" style="vertical-align:bottom;font-size:1rem;">mic</i> By Marcus Webb</span> &nbsp;|&nbsp; <span>2h 14m</span></div>
+          </div>
+        </div>
+
+        <div class="mag-side">
+          <div class="mag-card fade-right-element">
+            <img src="images/unsplash_1556761175-4_80fad2c7.webp" class="mag-c-img" alt="Pick 1">
+            <div class="mag-c-content">
+              <h4 class="mag-c-title">The Psychology of Money</h4>
+              <div class="mag-meta"><span>Finance</span> • <span>45m</span></div>
+            </div>
+          </div>
+
+          <div class="mag-card fade-right-element" style="transition-delay:0.1s">
+            <img src="images/unsplash_153558520982_7839f81f.webp" class="mag-c-img" alt="Pick 2">
+            <div class="mag-c-content">
+              <h4 class="mag-c-title">Deep Space Discoveries</h4>
+              <div class="mag-meta"><span>Science</span> • <span>1h 10m</span></div>
+            </div>
+          </div>
+
+          <div class="mag-card fade-right-element" style="transition-delay:0.2s">
+            <img src="images/unsplash_147873727023_9576a8ea.webp" class="mag-c-img" alt="Pick 3">
+            <div class="mag-c-content">
+              <h4 class="mag-c-title">Unsolved Mysteries Daily</h4>
+              <div class="mag-meta"><span>True Crime</span> • <span>38m</span></div>
+            </div>
+          </div>
+          
+          <div class="mag-card fade-right-element" style="transition-delay:0.3s">
+            <img src="images/unsplash_151938995047_7e571d97.webp" class="mag-c-img" alt="Pick 4">
+            <div class="mag-c-content">
+              <h4 class="mag-c-title">The Comedy Hour: Live</h4>
+              <div class="mag-meta"><span>Comedy</span> • <span>55m</span></div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 5: Creator Spotlight (Interactive Split) -->
+  <section class="c-split-sec" id="creator-spotlight">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Creator <span>Spotlight</span></h2>
+      <div class="c-split-layout">
+        
+        <!-- Left: List -->
+        <div class="c-list fade-left-element">
+          <div class="c-list-item active" data-index="0">
+            <img src="images/about7theme.webp" alt="Elena Kovacs">
+            <div class="c-list-info">
+              <h3>Elena Kovacs</h3>
+              <p>Startup Stories</p>
+            </div>
+          </div>
+          <div class="c-list-item" data-index="1">
+            <img src="images/about6theme.webp" alt="Alex Rivera">
+            <div class="c-list-info">
+              <h3>Alex Rivera</h3>
+              <p>Tech Breakdown</p>
+            </div>
+          </div>
+          <div class="c-list-item" data-index="2">
+            <img src="images/about9theme.webp" alt="Sarah Chen">
+            <div class="c-list-info">
+              <h3>Sarah Chen</h3>
+              <p>True Crime Weekly</p>
+            </div>
+          </div>
+          <div class="c-list-item" data-index="3">
+            <img src="images/about8theme.webp" alt="Marcus Webb">
+            <div class="c-list-info">
+              <h3>Marcus Webb</h3>
+              <p>Mind & Money</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Right: Preview -->
+        <div class="c-preview fade-right-element">
+          <div class="c-preview-img-wrapper">
+            <img src="images/about7theme.webp" id="c-img" class="c-preview-img" alt="Elena Kovacs">
+          </div>
+          <div class="c-preview-content" id="c-content">
+            <span class="c-preview-role" id="c-role">Startup Stories</span>
+            <h3 class="c-preview-name" id="c-name">Elena Kovacs</h3>
+            <p class="c-preview-desc" id="c-desc">"Highlighting the chaotic, beautiful journey of building startups from zero to one."</p>
+            
+            <div class="c-stats-container">
+              <div class="c-stat-row">
+                <div class="c-stat-header"><span>Followers</span><span id="c-stat1-val">3.2M</span></div>
+                <div class="c-stat-bar"><div class="c-stat-fill" id="c-stat1-bar" style="width: 90%; background: #A85BD8;"></div></div>
+              </div>
+              <div class="c-stat-row">
+                <div class="c-stat-header"><span>Episodes</span><span id="c-stat2-val">180</span></div>
+                <div class="c-stat-bar"><div class="c-stat-fill" id="c-stat2-bar" style="width: 75%; background: #00E5FF;"></div></div>
+              </div>
+              <div class="c-stat-row">
+                <div class="c-stat-header"><span>Engagement</span><span id="c-stat3-val">98%</span></div>
+                <div class="c-stat-bar"><div class="c-stat-fill" id="c-stat3-bar" style="width: 98%; background: #FFD54F;"></div></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- Section 6: Discover More (Cinematic CTA) -->
+  <section class="cta-sec">
+    <div class="container">
+      <div class="cta-banner fade-up-element">
+        <div class="cta-bg"></div>
+        <div class="cta-glow"></div>
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Dive Deep?</h2>
+          <div class="cta-buttons">
+            <a href="podcasts.html" class="btn btn-primary btn-magnetic"><span style="position:relative; z-index:2;">Explore Podcasts</span></a>
+            <a href="404.html" class="btn btn-outline btn-magnetic"><span style="position:relative; z-index:2;">Start Listening</span></a>
+          </div>
+        </div>
+        <div class="cta-waveform">
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+          <span></span><span></span><span></span><span></span><span></span><span></span><span></span><span></span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Shared Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="fade-up-element">
+          <a href="index.html" class="footer-logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+          <p class="footer-text">The premium destination for audio and video podcasts. Experience crystal clear streaming and discover your next favorite creator.</p>
+          <div class="social-links">
+            <a href="404.html"><i class="material-icons">podcasts</i></a>
+            <a href="404.html"><i class="material-icons">mic</i></a>
+            <a href="404.html"><i class="material-icons">headphones</i></a>
+            <a href="404.html"><i class="material-icons">rss_feed</i></a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="podcasts.html">Podcasts</a></li>
+            <li><a href="video-podcasts.html">Video Podcasts</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="discover.html">Discover</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <ul class="footer-links">
+            <li><a href="404.html">Contact Us</a></li>
+            <li><a href="404.html">Help Center</a></li>
+            <li><a href="404.html">Privacy Policy</a></li>
+            <li><a href="404.html">Terms &amp; Conditions</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Newsletter</h4>
+          <p class="footer-text">Get weekly recommendations.</p>
+          <form class="newsletter-form" action="404.html" method="GET">
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 15px;"><i class="material-icons">send</i></button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Stackly. All rights reserved. Designed for Premium Listening.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    gsap.registerPlugin(ScrollTrigger);
+
+    // Initialize Curated Discoveries Swiper
+    const curatedSwiper = new Swiper('.curated-swiper', {
+      slidesPerView: 1,
+      spaceBetween: 30,
+      loop: true,
+      autoplay: {
+        delay: 3000,
+        disableOnInteraction: false,
+      },
+      breakpoints: {
+        640: { slidesPerView: 1.5, spaceBetween: 20 },
+        768: { slidesPerView: 2, spaceBetween: 25 },
+        1024: { slidesPerView: 3, spaceBetween: 30 }
+      }
+    });
+    
+    // Intersection Observer for scroll animations
+    const animClasses = ['fade-up-element', 'zoom-in-element', 'fade-left-element', 'fade-right-element'];
+    const selector = animClasses.map(c => '.' + c).join(', ');
+    const elements = document.querySelectorAll(selector);
+
+    const obs = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+
+    elements.forEach(el => obs.observe(el));
+
+    // Creator Spotlight Interaction
+    const creatorData = [
+      {
+        name: 'Elena Kovacs',
+        role: 'Startup Stories',
+        img: 'images/about7theme.webp',
+        desc: '"Highlighting the chaotic, beautiful journey of building startups from zero to one."',
+        stats: [
+          { label: 'Followers', val: '3.2M', width: '90%', color: '#A85BD8' },
+          { label: 'Episodes', val: '180', width: '75%', color: '#00E5FF' },
+          { label: 'Engagement', val: '98%', width: '98%', color: '#FFD54F' }
+        ]
+      },
+      {
+        name: 'Alex Rivera',
+        role: 'Tech Breakdown',
+        img: 'images/about6theme.webp',
+        desc: '"Demystifying the complex world of AI, machine learning, and the future of technology."',
+        stats: [
+          { label: 'Followers', val: '4.1M', width: '95%', color: '#A85BD8' },
+          { label: 'Episodes', val: '210', width: '85%', color: '#00E5FF' },
+          { label: 'Engagement', val: '92%', width: '92%', color: '#FFD54F' }
+        ]
+      },
+      {
+        name: 'Sarah Chen',
+        role: 'True Crime Weekly',
+        img: 'images/about9theme.webp',
+        desc: '"Deep dives into unsolved mysteries, gripping investigations, and untold stories."',
+        stats: [
+          { label: 'Followers', val: '2.8M', width: '82%', color: '#A85BD8' },
+          { label: 'Episodes', val: '145', width: '60%', color: '#00E5FF' },
+          { label: 'Engagement', val: '96%', width: '96%', color: '#FFD54F' }
+        ]
+      },
+      {
+        name: 'Marcus Webb',
+        role: 'Mind & Money',
+        img: 'images/about8theme.webp',
+        desc: '"Your weekly masterclass on personal finance, wealth building, and a millionaire mindset."',
+        stats: [
+          { label: 'Followers', val: '1.9M', width: '65%', color: '#A85BD8' },
+          { label: 'Episodes', val: '95', width: '45%', color: '#00E5FF' },
+          { label: 'Engagement', val: '99%', width: '99%', color: '#FFD54F' }
+        ]
+      }
+    ];
+
+    const cItems = document.querySelectorAll('.c-list-item');
+    const cImg = document.getElementById('c-img');
+    const cContent = document.getElementById('c-content');
+    const cName = document.getElementById('c-name');
+    const cRole = document.getElementById('c-role');
+    const cDesc = document.getElementById('c-desc');
+    
+    const stat1Val = document.getElementById('c-stat1-val');
+    const stat1Bar = document.getElementById('c-stat1-bar');
+    const stat2Val = document.getElementById('c-stat2-val');
+    const stat2Bar = document.getElementById('c-stat2-bar');
+    const stat3Val = document.getElementById('c-stat3-val');
+    const stat3Bar = document.getElementById('c-stat3-bar');
+
+    let isCAnimating = false;
+
+    if (cItems.length > 0) {
+      cItems.forEach(item => {
+        item.addEventListener('click', function() {
+          if (isCAnimating || this.classList.contains('active')) return;
+          
+          isCAnimating = true;
+          cItems.forEach(i => i.classList.remove('active'));
+          this.classList.add('active');
+
+          const data = creatorData[parseInt(this.dataset.index)];
+
+          cImg.classList.add('is-animating');
+          cContent.classList.add('is-animating');
+          
+          stat1Bar.style.width = '0%';
+          stat2Bar.style.width = '0%';
+          stat3Bar.style.width = '0%';
+
+          setTimeout(() => {
+            cImg.src = data.img;
+            cName.textContent = data.name;
+            cRole.textContent = data.role;
+            cDesc.textContent = data.desc;
+            
+            stat1Val.textContent = data.stats[0].val;
+            stat1Bar.style.background = data.stats[0].color;
+            
+            stat2Val.textContent = data.stats[1].val;
+            stat2Bar.style.background = data.stats[1].color;
+            
+            stat3Val.textContent = data.stats[2].val;
+            stat3Bar.style.background = data.stats[2].color;
+
+            cImg.classList.remove('is-animating');
+            cContent.classList.remove('is-animating');
+            
+            setTimeout(() => {
+              stat1Bar.style.width = data.stats[0].width;
+              stat2Bar.style.width = data.stats[1].width;
+              stat3Bar.style.width = data.stats[2].width;
+              isCAnimating = false;
+            }, 100);
+          }, 400);
+        });
+      });
+    }
+
+    // Magazine Interactive Sync
+    const magCards = document.querySelectorAll('.mag-card');
+    const magFeaturedImg = document.querySelector('.mag-f-img');
+    const magFeaturedBadge = document.querySelector('.mag-badge');
+    const magFeaturedTitle = document.querySelector('.mag-f-title');
+    const magFeaturedMeta = document.querySelector('.mag-meta span:first-child');
+    const magFeaturedTime = document.querySelector('.mag-meta span:last-child');
+    
+    magCards.forEach(card => {
+      card.addEventListener('click', function() {
+        const img = this.querySelector('.mag-c-img').src;
+        const title = this.querySelector('.mag-c-title').textContent;
+        const metaCategory = this.querySelector('.mag-meta span:first-child').textContent;
+        const metaTime = this.querySelector('.mag-meta span:last-child').textContent;
+
+        magFeaturedImg.style.opacity = '0';
+        setTimeout(() => {
+          magFeaturedImg.src = img;
+          magFeaturedTitle.textContent = title;
+          magFeaturedBadge.textContent = 'MUST LISTEN';
+          magFeaturedMeta.innerHTML = `<i class="material-icons" style="vertical-align:bottom;font-size:1rem;">mic</i> By WpCasterPro`;
+          magFeaturedTime.textContent = metaTime;
+          magFeaturedImg.style.opacity = '1';
+        }, 300);
+      });
+    });
+  </script>
+</body>
+</html>

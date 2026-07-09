@@ -1,0 +1,1178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Video Podcasts – PodStream Cinematic</title>
+
+  <!-- Fonts & Icons -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <!-- Swiper CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <!-- Global Styles (Header/Footer) -->
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* ─── GLOBAL & UTILITIES ─── */
+    :root {
+      --primary-color: #A85BD8;
+      --bg-color: #1F2430;
+      --text-color: #FFFFFF;
+      --glass-bg: rgba(255, 255, 255, 0.05);
+      --glass-border: rgba(255, 255, 255, 0.1);
+    }
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      margin: 0;
+      padding: 0;
+      padding-bottom: 0 !important;
+    }
+    .container { max-width: 1400px; margin: 0 auto; padding: 0 4%; }
+    .section-title { font-size: clamp(2rem, 4vw, 2.8rem); font-weight: 800; margin-bottom: 24px; letter-spacing: -0.5px; }
+    .accent { color: var(--primary-color); }
+    img { max-width: 100%; display: block; }
+    a { text-decoration: none; color: inherit; }
+    
+    .btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 28px; border-radius: 50px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; border: none; }
+    .btn-primary { background: var(--primary-color); color: #fff; }
+    .btn-primary:hover { background: #9647c4; transform: translateY(-2px); box-shadow: 0 10px 20px rgba(168,91,216,0.3); }
+    .btn-outline { background: transparent; color: #fff; border: 2px solid rgba(255,255,255,0.2); }
+    .btn-outline:hover { border-color: var(--primary-color); background: var(--primary-color); color: var(--bg-color); }
+
+    .glass { background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); border: 1px solid var(--glass-border); }
+
+    .glass-card {
+      background: rgba(255, 255, 255, 0.03);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.1);
+    }
+
+    /* Ambient Glows for Glassmorphism */
+    .ambient-glow {
+      position: absolute;
+      border-radius: 50%;
+      filter: blur(80px);
+      z-index: 0;
+      opacity: 0.4;
+      pointer-events: none;
+    }
+    .glow-1 { width: 400px; height: 400px; background: var(--primary-color); top: -100px; left: -100px; }
+    .glow-2 { width: 500px; height: 500px; background: #4a148c; bottom: 10%; right: -100px; }
+
+    /* ════════════════════════════════════
+       SECTION 1: HERO BANNER
+    ════════════════════════════════════ */
+    .pods-hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .pods-hero__bg {
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      filter: blur(3px) brightness(0.35);
+      transform: scale(1.08);
+    }
+
+    .pods-hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        rgba(31,36,48,0.92) 0%,
+        rgba(168,91,216,0.18) 50%,
+        rgba(31,36,48,0.95) 100%);
+    }
+
+    .pods-hero__content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 780px;
+      padding: 2rem 1.5rem;
+      width: 100%;
+    }
+
+    .pods-hero__title {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      opacity: 0;
+      transform: translateY(40px);
+      margin-bottom: 1rem;
+      animation: heroFadeUp 0.8s ease forwards;
+    }
+
+    .pods-hero__title .highlight {
+      color: var(--primary-color);
+      text-shadow: 0 0 30px rgba(168,91,216,0.6);
+    }
+
+    .pods-hero__subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: heroFadeUp 0.8s ease forwards 0.15s;
+    }
+
+    .pods-hero__search {
+      display: flex;
+      align-items: center;
+      background: rgba(255,255,255,0.1);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255,255,255,0.2);
+      border-radius: 50px;
+      overflow: hidden;
+      max-width: 560px;
+      margin: 0 auto;
+      opacity: 0;
+      transform: scale(0.88);
+      animation: heroZoomIn 0.8s ease forwards 0.3s;
+    }
+
+    .pods-hero__search input {
+      flex: 1;
+      background: transparent;
+      border: none;
+      outline: none;
+      padding: 1rem 1.5rem;
+      color: #fff;
+      font-size: 1rem;
+      font-family: 'Inter', sans-serif;
+    }
+
+    .pods-hero__search input::placeholder { color: rgba(255,255,255,0.5); }
+
+    .pods-hero__search button {
+      background: var(--primary-color);
+      border: none;
+      cursor: pointer;
+      padding: 0.85rem 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.3s;
+    }
+
+    .pods-hero__search button:hover { background: rgba(168,91,216,0.8); }
+
+    .pods-hero__search button .material-icons {
+      color: #fff;
+      font-size: 1.3rem;
+    }
+
+    /* Floating pill badges */
+    .pods-badge {
+      position: absolute;
+      z-index: 3;
+      padding: 0.45rem 1.1rem;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.18);
+      animation: badgeFloat 3.5s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    .pods-badge--new {
+      top: 22%;
+      left: 8%;
+      background: rgba(168,91,216,0.3);
+      color: var(--primary-color);
+      animation-delay: 0s;
+    }
+
+    .pods-badge--trending {
+      top: 30%;
+      right: 8%;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+      animation-delay: 1.2s;
+    }
+
+    @keyframes badgeFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+    
+    @keyframes heroFadeUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes heroZoomIn {
+      to { opacity: 1; transform: scale(1); }
+    }
+
+    /* Waveform animation */
+    .pods-waveform {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 40px;
+    }
+
+    .pods-waveform span {
+      display: block;
+      width: 4px;
+      border-radius: 2px;
+      background: rgba(168,91,216,0.7);
+      animation: waveBar 1.2s ease-in-out infinite;
+    }
+
+    .pods-waveform span:nth-child(1)  { height: 12px; animation-delay: 0s; }
+    .pods-waveform span:nth-child(2)  { height: 24px; animation-delay: 0.1s; }
+    .pods-waveform span:nth-child(3)  { height: 36px; animation-delay: 0.2s; }
+    .pods-waveform span:nth-child(4)  { height: 28px; animation-delay: 0.3s; }
+    .pods-waveform span:nth-child(5)  { height: 18px; animation-delay: 0.4s; }
+    .pods-waveform span:nth-child(6)  { height: 38px; animation-delay: 0.15s; }
+    .pods-waveform span:nth-child(7)  { height: 22px; animation-delay: 0.25s; }
+    .pods-waveform span:nth-child(8)  { height: 32px; animation-delay: 0.05s; }
+    .pods-waveform span:nth-child(9)  { height: 16px; animation-delay: 0.35s; }
+    .pods-waveform span:nth-child(10) { height: 26px; animation-delay: 0.45s; }
+    .pods-waveform span:nth-child(11) { height: 38px; animation-delay: 0.1s; }
+    .pods-waveform span:nth-child(12) { height: 20px; animation-delay: 0.2s; }
+    .pods-waveform span:nth-child(13) { height: 30px; animation-delay: 0.3s; }
+
+    @keyframes waveBar {
+      0%, 100% { transform: scaleY(1); opacity: 0.7; }
+      50% { transform: scaleY(0.35); opacity: 1; }
+    }
+
+    /* ════════════════════════════════════
+       SECTION 2: CINEMATIC FEATURED SHOW
+    ════════════════════════════════════ */
+    .vp-cinematic-show { padding: 120px 0; position: relative; background: radial-gradient(circle at 70% 50%, rgba(168,91,216,0.1) 0%, transparent 50%); }
+    .vp-cine-layout { display: grid; grid-template-columns: 1fr 400px; gap: 40px; align-items: stretch; max-width: 1500px; margin: 0 auto; padding: 0 4%; }
+    
+    .vp-cine-video { position: relative; border-radius: 32px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05); cursor: pointer; }
+    .vp-cine-video img { width: 100%; height: 100%; object-fit: cover; transition: transform 1.5s cubic-bezier(0.16, 1, 0.3, 1), filter 0.8s ease; filter: brightness(0.85); }
+    .vp-cine-video:hover img { transform: scale(1.05); filter: brightness(1); }
+    .vp-cine-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,15,24,0.95) 0%, rgba(13,15,24,0.3) 40%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 60px; pointer-events: none; }
+    
+    .vp-cine-play { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); width: 100px; height: 100px; background: rgba(168,91,216,0.2); backdrop-filter: blur(20px); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.6s cubic-bezier(0.34, 1.56, 0.64, 1); z-index: 10; }
+    .vp-cine-video:hover .vp-cine-play { opacity: 1; transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 60px rgba(168,91,216,0.5); border-color: var(--primary-color); }
+    .vp-cine-play i { font-size: 3rem; color: #fff; margin-left: 6px; }
+    
+    .vp-cine-live { background: #FF3B30; color: #fff; padding: 6px 16px; border-radius: 50px; font-weight: 800; font-size: 0.8rem; letter-spacing: 1.5px; align-self: flex-start; margin-bottom: 24px; animation: pulseRed 2s infinite; display: flex; align-items: center; gap: 8px; text-transform: uppercase; }
+    .vp-cine-live::before { content: ''; display: block; width: 8px; height: 8px; background: #fff; border-radius: 50%; }
+    
+    .vp-cine-title { font-size: clamp(2.5rem, 5vw, 4.5rem); font-weight: 900; line-height: 1.1; margin-bottom: 20px; text-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+    
+    .vp-cine-meta { display: flex; align-items: center; gap: 30px; font-size: 1.1rem; color: rgba(255,255,255,0.8); }
+    .vp-cine-meta span { display: flex; align-items: center; gap: 8px; }
+    .vp-cine-meta i { color: var(--primary-color); }
+    
+    .vp-cine-side { display: flex; flex-direction: column; gap: 20px; }
+    .vp-cine-glass { background: rgba(255,255,255,0.03); backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid rgba(255,255,255,0.08); border-radius: 24px; padding: 30px; }
+    
+    .vp-creator-card { display: flex; align-items: center; gap: 20px; transition: transform 0.4s; cursor: pointer; }
+    .vp-creator-card:hover { transform: translateY(-5px); background: rgba(255,255,255,0.06); }
+    .vp-creator-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary-color); }
+    .vp-creator-info h4 { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+    .vp-creator-info p { color: var(--primary-color); font-weight: 600; font-size: 0.9rem; letter-spacing: 1px; text-transform: uppercase; }
+    
+    .vp-ep-strip { flex: 1; display: flex; flex-direction: column; justify-content: center; gap: 20px; }
+    .vp-ep-item { display: flex; align-items: center; gap: 16px; padding: 12px; border-radius: 16px; transition: background 0.3s; cursor: pointer; }
+    .vp-ep-item:hover { background: rgba(168,91,216,0.1); }
+    .vp-ep-thumb { width: 100px; height: 60px; border-radius: 8px; object-fit: cover; }
+    .vp-ep-info h5 { font-size: 1rem; font-weight: 700; margin-bottom: 4px; display: -webkit-box; -webkit-line-clamp: 1; -webkit-box-orient: vertical; overflow: hidden; }
+    .vp-ep-info p { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+
+    /* ════════════════════════════════════
+       SECTION 3: CURATED DISCOVERIES (4-Column Grid)
+    ════════════════════════════════════ */
+    .vp-discovery-wall { padding: 100px 0; background: #151821; position: relative; }
+    .vp-wall-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-top: 50px; }
+    
+    .vp-wall-item {
+      position: relative; border-radius: 20px; overflow: hidden; cursor: pointer;
+      background: rgba(31,36,48,0.85); border: 1px solid rgba(255,255,255,0.08);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.4);
+      display: flex; flex-direction: column;
+      transition: transform 0.4s ease, box-shadow 0.4s ease, border-color 0.4s ease;
+    }
+    .vp-wall-item:hover { transform: translateY(-10px); border-color: rgba(168,91,216,0.5); box-shadow: 0 20px 40px rgba(0,0,0,0.6), 0 0 30px rgba(168,91,216,0.15); }
+    
+    /* Square image */
+    .vp-wall-img-wrap { position: relative; width: 100%; aspect-ratio: 1/1; overflow: hidden; }
+    .vp-wall-img-wrap img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s cubic-bezier(0.16,1,0.3,1); display: block; }
+    .vp-wall-item:hover .vp-wall-img-wrap img { transform: scale(1.08); }
+    .vp-wall-img-wrap::after { content: ''; position: absolute; bottom: 0; left: 0; width: 100%; height: 60%; background: linear-gradient(to top, rgba(31,36,48,1) 0%, rgba(31,36,48,0.7) 20%, transparent 100%); z-index: 1; }
+    
+    /* Episode badge — bottom left */
+    .vp-wall-ep-badge { position: absolute; bottom: 14px; left: 14px; z-index: 2; background: rgba(31,36,48,0.85); color: #fff; font-size: 0.78rem; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
+    
+    /* Play button — bottom right */
+    .vp-wall-play { position: absolute; bottom: 10px; right: 14px; z-index: 2; width: 46px; height: 46px; border-radius: 50%; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; transition: all 0.4s cubic-bezier(0.16,1,0.3,1); }
+    .vp-wall-play i { font-size: 1.9rem; color: #fff; margin-left: 2px; }
+    .vp-wall-item:hover .vp-wall-play { background: var(--primary-color); border-color: var(--primary-color); transform: scale(1.1); box-shadow: 0 8px 20px rgba(168,91,216,0.5); }
+    
+    /* Card body */
+    .vp-wall-body { padding: 14px 18px 20px; display: flex; flex-direction: column; }
+    .vp-wall-info-row { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: var(--primary-color); font-weight: 600; margin-bottom: 7px; }
+    .vp-wall-info-row .ep-c { display: flex; align-items: center; gap: 4px; }
+    .vp-wall-info-row .ep-c i { font-size: 0.88rem; }
+    .vp-wall-info-row .cat-lbl { color: rgba(255,255,255,0.55); font-size: 0.76rem; }
+    .vp-wall-title { font-size: 1.15rem; font-weight: 700; line-height: 1.3; margin: 0 0 5px 0; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; transition: color 0.3s ease; }
+    .vp-wall-item:hover .vp-wall-title { color: var(--primary-color); }
+    .vp-wall-author { font-size: 0.85rem; color: rgba(255,255,255,0.5); }
+    
+    @media (max-width: 1024px) { .vp-wall-grid { grid-template-columns: repeat(2,1fr); } }
+    @media (max-width: 600px) { .vp-wall-grid { grid-template-columns: 1fr; } }
+
+    /* ════════════════════════════════════
+       SECTION 4: CREATOR ECOSYSTEM
+    ════════════════════════════════════ */
+    .vp-creator-ecosystem { padding: 150px 0; position: relative; overflow: hidden; background: radial-gradient(circle at 30% 50%, rgba(168,91,216,0.1) 0%, transparent 60%); }
+    .ce-layout { position: relative; max-width: 1400px; margin: 0 auto; min-height: 800px; display: flex; align-items: center; justify-content: center; }
+    
+    .ce-main-creator { position: absolute; left: 10%; top: 50%; transform: translateY(-50%); width: 450px; aspect-ratio: 3/4; border-radius: 40px; overflow: hidden; box-shadow: 0 40px 100px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.05); z-index: 10; transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); }
+    .ce-main-creator img { width: 100%; height: 100%; object-fit: cover; filter: brightness(0.9); }
+    .ce-main-overlay { position: absolute; inset: 0; background: linear-gradient(135deg, rgba(168,91,216,0.3) 0%, rgba(13,15,24,0.9) 100%); padding: 40px; display: flex; flex-direction: column; justify-content: flex-end; }
+    .ce-main-creator:hover { transform: translateY(-50%) perspective(1000px) rotateY(5deg) rotateX(2deg) scale(1.02); }
+    
+    .ce-badge { position: absolute; background: rgba(255,255,255,0.05); backdrop-filter: blur(15px); border: 1px solid rgba(255,255,255,0.15); border-radius: 20px; padding: 12px 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.4); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 15; }
+    .ce-badge-val { font-size: 1.8rem; font-weight: 900; background: linear-gradient(135deg, #fff, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .ce-badge-lbl { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.7); margin-top: 4px; letter-spacing: 1px; }
+    
+    .ce-b1 { top: 15%; left: 5%; animation: floatSlow 6s infinite alternate; }
+    .ce-b2 { bottom: 10%; left: 35%; animation: floatSlow 7s infinite alternate-reverse; }
+    
+    .ce-network-nodes { position: absolute; right: 5%; top: 0; bottom: 0; width: 55%; z-index: 5; }
+    
+    /* SVG glowing lines */
+    .ce-svg-lines { position: absolute; inset: 0; width: 100%; height: 100%; pointer-events: none; z-index: 2; opacity: 0.6; }
+    .ce-line { stroke: var(--primary-color); stroke-width: 1.5; fill: none; filter: drop-shadow(0 0 8px rgba(168,91,216,0.8)); stroke-dasharray: 6, 6; animation: dashMove 30s linear infinite reverse; }
+    
+    @keyframes dashMove { to { stroke-dashoffset: 1000; } }
+    
+    .ce-node { position: absolute; display: flex; align-items: center; gap: 16px; background: rgba(31,36,48,0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); padding: 10px 20px 10px 10px; border-radius: 60px; box-shadow: 0 15px 30px rgba(0,0,0,0.5); cursor: pointer; transition: all 0.4s; }
+    .ce-node:hover { transform: translateY(-5px) scale(1.05); border-color: rgba(168,91,216,0.5); background: rgba(31,36,48,0.9); }
+    .ce-node img { width: 60px; height: 60px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary-color); }
+    .ce-node-info h5 { font-size: 1.1rem; font-weight: 800; margin-bottom: 2px; }
+    .ce-node-info p { font-size: 0.8rem; color: rgba(255,255,255,0.6); }
+    
+    .ce-n1 { top: 15%; right: 25%; animation: floatSlow 8s infinite alternate; }
+    .ce-n2 { top: 45%; right: 5%; animation: floatSlow 9s infinite alternate-reverse; }
+    .ce-n3 { bottom: 20%; right: 30%; animation: floatSlow 7s infinite alternate; }
+    
+    /* Orbiting thumbnails */
+    .ce-orbit-track { position: absolute; top: 50%; left: 30%; width: 700px; height: 700px; transform: translate(-50%, -50%); border-radius: 50%; border: 1px dashed rgba(255,255,255,0.1); pointer-events: none; z-index: 1; animation: orbitSpin 40s linear infinite; }
+    .ce-orbit-item { position: absolute; top: -40px; left: 50%; transform: translateX(-50%); width: 140px; height: 80px; border-radius: 12px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); box-shadow: 0 10px 20px rgba(0,0,0,0.5); pointer-events: auto; cursor: pointer; }
+    .ce-orbit-item img { width: 100%; height: 100%; object-fit: cover; animation: orbitCounterSpin 40s linear infinite; }
+    .ce-oi-2 { top: auto; bottom: -40px; }
+    
+    @keyframes orbitSpin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    @keyframes orbitCounterSpin { 100% { transform: rotate(-360deg); } }
+
+    /* ════════════════════════════════════
+       SECTION 5: IMMERSIVE WATCH EXPERIENCE
+    ════════════════════════════════════ */
+    .vp-immersive { padding: 180px 0; background: #080A10; position: relative; min-height: 1100px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    
+    .iw-ambient-glow { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: 800px; height: 600px; background: radial-gradient(ellipse at center, rgba(168,91,216,0.2) 0%, transparent 70%); filter: blur(60px); z-index: 0; pointer-events: none; animation: pulseGlow 5s infinite alternate; }
+    @keyframes pulseGlow { 100% { transform: translate(-50%, -50%) scale(1.1); opacity: 0.7; } }
+    
+    .iw-center-player { position: relative; z-index: 10; width: 55%; max-width: 900px; aspect-ratio: 16/9; border-radius: 24px; background: #000; box-shadow: 0 30px 80px rgba(0,0,0,0.8), 0 0 0 1px rgba(255,255,255,0.08); overflow: hidden; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.4s; }
+    .iw-center-player:hover { transform: scale(1.02); box-shadow: 0 40px 100px rgba(168,91,216,0.3), 0 0 0 1px rgba(168,91,216,0.5); }
+    .iw-center-player img { width: 100%; height: 100%; object-fit: cover; opacity: 0.8; }
+    
+    .iw-play-btn { position: absolute; width: 80px; height: 80px; background: rgba(168,91,216,0.8); backdrop-filter: blur(10px); border-radius: 50%; display: flex; align-items: center; justify-content: center; z-index: 15; box-shadow: 0 0 30px rgba(168,91,216,0.6); }
+    .iw-play-btn i { font-size: 3rem; color: #fff; margin-left: 5px; }
+    
+    .iw-widget { position: absolute; background: rgba(255,255,255,0.03); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 16px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 12; display: flex; flex-direction: column; gap: 12px; }
+    .iw-widget-title { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; color: rgba(255,255,255,0.6); letter-spacing: 1px; display: flex; align-items: center; gap: 6px; }
+    .iw-widget-title i { color: var(--primary-color); font-size: 1rem; }
+    
+    /* Specific Widgets */
+    .iw-w-ai { top: 12%; left: 8%; width: 260px; animation: floatSlow 8s infinite alternate; }
+    .iw-w-ai-content { display: flex; gap: 12px; align-items: center; }
+    .iw-w-ai-content img { width: 50px; height: 50px; border-radius: 8px; object-fit: cover; }
+    .iw-w-ai-content div h6 { font-size: 0.9rem; font-weight: 700; margin-bottom: 2px; }
+    .iw-w-ai-content div p { font-size: 0.7rem; color: rgba(255,255,255,0.5); }
+    
+    .iw-w-chat { bottom: 15%; left: 5%; width: 300px; animation: floatSlow 9s infinite alternate-reverse; }
+    .iw-chat-msg { display: flex; gap: 10px; font-size: 0.8rem; align-items: flex-start; }
+    .iw-chat-msg img { width: 24px; height: 24px; border-radius: 50%; }
+    .iw-chat-msg span { color: rgba(255,255,255,0.8); background: rgba(255,255,255,0.05); padding: 6px 10px; border-radius: 8px; border-bottom-left-radius: 0; }
+    
+    .iw-w-eq { top: 20%; right: 8%; width: 220px; animation: floatSlow 7s infinite alternate; }
+    .iw-eq-bars { display: flex; align-items: flex-end; gap: 4px; height: 40px; margin-top: 10px; }
+    .iw-eq-bars div { flex: 1; background: var(--primary-color); border-radius: 2px; animation: eqBounce 1s ease-in-out infinite alternate; }
+    .iw-eq-bars div:nth-child(2) { animation-delay: 0.1s; }
+    .iw-eq-bars div:nth-child(3) { animation-delay: 0.3s; }
+    .iw-eq-bars div:nth-child(4) { animation-delay: 0.2s; }
+    .iw-eq-bars div:nth-child(5) { animation-delay: 0.4s; }
+    @keyframes eqBounce { 0% { height: 20%; } 100% { height: 100%; } }
+    
+    .iw-w-playlist { bottom: 10%; right: 10%; width: 280px; animation: floatSlow 10s infinite alternate-reverse; }
+    .iw-pl-item { display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .iw-pl-item:last-child { border-bottom: none; }
+    .iw-pl-item.active { color: var(--primary-color); font-weight: 700; }
+    .iw-pl-item i { font-size: 1.2rem; cursor: pointer; }
+    
+    /* Connecting lines */
+    .iw-svg-layer { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 5; pointer-events: none; }
+    .iw-line { stroke: rgba(168,91,216,0.3); stroke-width: 1.5; fill: none; stroke-dasharray: 4, 4; }
+
+    /* ════════════════════════════════════
+       SECTION 6: EDITOR'S VIDEO MAGAZINE
+    ════════════════════════════════════ */
+    .vp-magazine { padding: 160px 0; background: var(--bg-color); position: relative; }
+    
+    .mag-grid { display: grid; grid-template-columns: repeat(12, 1fr); grid-auto-rows: 250px; gap: 30px; margin-top: 60px; }
+    
+    .mag-item { position: relative; border-radius: 24px; overflow: hidden; cursor: pointer; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+    .mag-item img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s cubic-bezier(0.25, 1, 0.5, 1); filter: brightness(0.85); }
+    .mag-item:hover img { transform: scale(1.08); filter: brightness(1); }
+    
+    .mag-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(13,15,24,0.95) 0%, rgba(13,15,24,0.2) 60%, transparent 100%); display: flex; flex-direction: column; justify-content: flex-end; padding: 30px; }
+    .mag-item-large .mag-overlay { padding: 50px; }
+    
+    .mag-cat { align-self: flex-start; background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); padding: 6px 14px; border-radius: 50px; font-size: 0.75rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: auto; border: 1px solid rgba(255,255,255,0.2); }
+    
+    .mag-content { position: relative; z-index: 2; transform: translateY(20px); transition: transform 0.4s; }
+    .mag-item:hover .mag-content { transform: translateY(0); }
+    
+    .mag-title { font-size: 1.8rem; font-weight: 900; line-height: 1.15; margin-bottom: 12px; }
+    .mag-item-large .mag-title { font-size: 3rem; }
+    
+    .mag-meta { display: flex; align-items: center; gap: 16px; font-size: 0.9rem; color: rgba(255,255,255,0.7); }
+    
+    .mag-play-hover { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5); width: 80px; height: 80px; background: rgba(168,91,216,0.3); backdrop-filter: blur(10px); border: 2px solid rgba(255,255,255,0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: all 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .mag-item:hover .mag-play-hover { opacity: 1; transform: translate(-50%, -50%) scale(1); box-shadow: 0 0 40px rgba(168,91,216,0.6); border-color: var(--primary-color); }
+    .mag-play-hover i { font-size: 2.5rem; color: #fff; margin-left: 5px; }
+    
+    /* Grid Spanning */
+    .mag-item-large { grid-column: 1 / 8; grid-row: span 2; }
+    .mag-item-tall { grid-column: 8 / 13; grid-row: span 3; }
+    .mag-item-wide { grid-column: 1 / 8; grid-row: span 1; }
+    .mag-item-small-1 { grid-column: 1 / 7; grid-row: span 1; }
+    .mag-item-small-2 { grid-column: 7 / 13; grid-row: span 1; }
+    
+    @media (max-width: 1024px) {
+      .mag-item-large { grid-column: 1 / 13; }
+      .mag-item-tall { grid-column: 1 / 7; }
+      .mag-item-wide { grid-column: 7 / 13; grid-row: span 2; }
+      .mag-item-small-1 { grid-column: 1 / 13; }
+      .mag-item-small-2 { grid-column: 1 / 13; }
+    }
+
+    /* ════════════════════════════════════
+       SECTION 7: CINEMATIC ENDING CTA
+    ════════════════════════════════════ */
+    .vp-end-cta { position: relative; height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; background: #000; }
+    .vp-end-bg { position: absolute; inset: 0; background: url('images/unsplash_151632149748_ad5da2cf.webp') center/cover; filter: blur(5px) brightness(0.3); transform: scale(1.1); animation: slowZoom 20s infinite alternate; }
+    
+    .vp-end-particles { position: absolute; inset: 0; background-image: radial-gradient(rgba(255,255,255,0.2) 1px, transparent 1px); background-size: 50px 50px; opacity: 0.3; animation: slideUp 40s linear infinite; }
+    
+    .vp-end-content { position: relative; z-index: 10; text-align: center; background: rgba(255,255,255,0.03); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border: 1px solid rgba(255,255,255,0.1); padding: 80px; border-radius: 40px; box-shadow: 0 40px 100px rgba(0,0,0,0.8); max-width: 900px; width: 90%; }
+    
+    .vp-end-title { font-size: clamp(3rem, 6vw, 5rem); font-weight: 900; line-height: 1.1; margin-bottom: 30px; background: linear-gradient(to right, #fff, var(--primary-color)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+    .vp-end-buttons { display: flex; gap: 20px; justify-content: center; }
+    .vp-end-buttons .btn { font-size: 1.2rem; padding: 18px 40px; }
+    
+    .vp-float-thumb { position: absolute; width: 150px; height: 100px; border-radius: 12px; overflow: hidden; box-shadow: 0 20px 40px rgba(0,0,0,0.5); z-index: 5; border: 2px solid rgba(255,255,255,0.1); }
+    .vp-float-thumb img { width: 100%; height: 100%; object-fit: cover; }
+    .vp-ft-1 { top: 15%; left: 15%; animation: floatSlow 8s infinite alternate; }
+    .vp-ft-2 { bottom: 20%; left: 10%; animation: floatSlow 9s infinite alternate-reverse; }
+    .vp-ft-3 { top: 25%; right: 10%; animation: floatSlow 7s infinite alternate; }
+    .vp-ft-4 { bottom: 15%; right: 15%; animation: floatSlow 10s infinite alternate-reverse; }
+    
+    @keyframes slowZoom { 0% { transform: scale(1); } 100% { transform: scale(1.15); } }
+    @keyframes slideUp { 0% { background-position: 0 0; } 100% { background-position: 0 -1000px; } }
+    @keyframes floatSlow { 0% { transform: translateY(0) rotate(0); } 100% { transform: translateY(-30px) rotate(5deg); } }
+    @keyframes pulseRed { 0% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.7); } 70% { box-shadow: 0 0 0 15px rgba(255, 59, 48, 0); } 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0); } }
+
+    /* Responsive Overrides */
+    @media (max-width: 1024px) {
+      .vp-cine-layout { grid-template-columns: 1fr; }
+      .vp-wall-grid { column-count: 2; }
+      .vp-studio-layout { flex-direction: column; }
+      .vp-giant-creator, .vp-studio-floating { width: 100%; max-width: 600px; right: 0; }
+      .vp-float-card.offset-right, .vp-float-card.offset-left { margin: 0; }
+      .vp-feature-panel { position: relative; inset: auto !important; margin: 20px; width: auto; }
+      .vp-immersive { flex-direction: column; justify-content: flex-start; padding-top: 100px; height: auto; min-height: auto; padding-bottom: 100px; }
+      .vp-center-player { width: 90%; }
+      .vp-glowing-lines { display: none; }
+      .vp-col-item { flex: 0 0 85vw; }
+      .vp-float-thumb { display: none; }
+      .ce-orbit-track { display: none; }
+      .iw-center-player { width: 85%; }
+    }
+    @media (max-width: 768px) {
+      .vp-wall-grid { column-count: 1; }
+      .vp-cine-title { font-size: 2.2rem; }
+      
+      .iw-center-player { width: 95%; }
+      .iw-widget { display: none; }
+      
+      .mag-item-tall { grid-column: 1 / 13; grid-row: span 2; }
+      .mag-item-wide { grid-column: 1 / 13; grid-row: span 1; }
+      .mag-grid { grid-auto-rows: 200px; gap: 20px; }
+      .mag-item-large .mag-title { font-size: 2rem; }
+      .mag-item-large .mag-overlay { padding: 30px; }
+      
+      .ce-main-creator img { max-width: 250px; }
+      .ce-main-overlay h3 { font-size: 2rem !important; }
+      .ce-badge { position: static; margin: 10px auto; transform: none !important; animation: none !important; }
+      .ce-layout { display: flex; flex-direction: column; align-items: center; gap: 20px; }
+      .ce-svg-lines { display: none; }
+      
+      .vp-end-buttons { flex-direction: column; width: 100%; }
+      .vp-end-content { padding: 40px 20px; border-radius: 20px; }
+      .vp-end-title { font-size: 2.2rem; margin-bottom: 20px; }
+      
+      .pods-hero { padding-top: 100px; min-height: 500px; align-items: center; justify-content: flex-start; }
+      .pods-hero__title { font-size: 2.2rem; margin-top: 20px; }
+      .pods-hero__search { flex-direction: column; border-radius: 20px; padding: 10px; width: 100%; box-sizing: border-box; }
+      .pods-hero__search input { width: 100%; text-align: center; }
+      .pods-hero__search button { width: 100%; border-radius: 10px; }
+      
+      .vp-cinematic-show, .vp-discovery-wall, .vp-creator-ecosystem, .vp-magazine { padding: 60px 0; }
+      .vp-cine-video { border-radius: 16px; margin-bottom: 30px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ HEADER (Shared) ═══════════ -->
+  <header class="header glass">
+    <nav class="nav-container">
+      <a href="index.html" class="logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="video-podcasts.html" class="active" style="color:var(--primary-color);">Video Podcasts</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="discover.html">Discover</a></li>
+        <li class="mobile-login"><a href="login.html" class="btn btn-primary" style="margin-top: 15px; width: 100%; justify-content: center;">Login</a></li>
+      </ul>
+      <div class="nav-actions">
+        <a href="404.html" style="color:inherit;"><i class="material-icons">search</i></a>
+        <a href="404.html" style="color:inherit;"><i class="material-icons">notifications</i></a>
+        <a href="404.html"><img src="images/woman_44_11c69897.webp" alt="User" class="user-profile" loading="lazy"></a>
+        <a href="login.html" class="btn btn-primary">Login</a>
+      </div>
+      <i class="material-icons hamburger">menu</i>
+    </nav>
+  </header>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 1: HERO BANNER
+  ═══════════════════════════════════════════ -->
+  <section class="pods-hero">
+    <div class="pods-hero__bg" style="background-image: url('images/unsplash_159369782125_99adef8d.webp');"></div>
+    <div class="pods-hero__overlay"></div>
+
+    <!-- Floating badges -->
+    <div class="pods-badge pods-badge--new">
+      <i class="material-icons" style="font-size:0.75rem;vertical-align:middle;">fiber_new</i>
+      &nbsp;LIVE NOW
+    </div>
+    <div class="pods-badge pods-badge--trending">
+      <i class="material-icons" style="font-size:0.75rem;vertical-align:middle;">trending_up</i>
+      &nbsp;#4K VIDEO
+    </div>
+
+    <!-- Content -->
+    <div class="pods-hero__content">
+      <h1 class="pods-hero__title" id="hero-title">
+        Immersive <span class="highlight">Video</span> Podcasts
+      </h1>
+      <p class="pods-hero__subtitle" id="hero-sub">
+        Cinematic experiences. The best creators. Stunning clarity.
+      </p>
+      <div class="pods-hero__search" id="hero-search">
+        <input type="text" placeholder="Search video podcasts, shows, creators…" aria-label="Search video podcasts">
+        <button aria-label="Search" onclick="window.location.href='404.html'">
+          <i class="material-icons">search</i>
+        </button>
+      </div>
+    </div>
+
+    <!-- Waveform decoration -->
+    <div class="pods-waveform" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 2: CINEMATIC FEATURED SHOW
+  ═══════════════════════════════════════════ -->
+  <section class="vp-cinematic-show">
+    <div class="vp-cine-layout">
+      <!-- Huge video area -->
+      <div class="vp-cine-video gs-reveal" onclick="window.location.href='404.html'">
+        <img src="images/unsplash_159848803513_652d7fd5.webp" alt="Featured Show">
+        <div class="vp-cine-play"><i class="material-icons">play_arrow</i></div>
+        <div class="vp-cine-overlay">
+          <div class="vp-cine-live">Live Premium</div>
+          <h2 class="vp-cine-title">The Future of AI<br>with Sam Altman</h2>
+          <div class="vp-cine-meta">
+            <span><i class="material-icons">schedule</i> 1h 45m</span>
+            <span><i class="material-icons">visibility</i> 4.2M Watching</span>
+            <span><i class="material-icons">4k</i> 4K Ultra HD</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Side Info -->
+      <div class="vp-cine-side gs-slide-left">
+        <!-- Creator Profile -->
+        <div class="vp-cine-glass vp-creator-card" onclick="window.location.href='404.html'">
+          <img src="images/man_32_d2dfa614.webp" alt="Lex Fridman" class="vp-creator-img">
+          <div class="vp-creator-info">
+            <p>Hosted By</p>
+            <h4>Lex Fridman</h4>
+          </div>
+        </div>
+        
+        <!-- Vertical Episode Strip -->
+        <div class="vp-cine-glass vp-ep-strip">
+          <h3 style="font-weight: 800; font-size: 1.2rem; margin-bottom: 10px;">Up Next</h3>
+          <div class="vp-ep-item" onclick="window.location.href='404.html'">
+            <img src="images/unsplash_151632149748_ad5da2cf.webp" alt="Ep 2" class="vp-ep-thumb">
+            <div class="vp-ep-info">
+              <h5>Ep 2: Neuralink Updates</h5>
+              <p>Elon Musk • 2h 10m</p>
+            </div>
+          </div>
+          <div class="vp-ep-item" onclick="window.location.href='404.html'">
+            <img src="images/unsplash_151877066043_ecf13dd9.webp" alt="Ep 3" class="vp-ep-thumb">
+            <div class="vp-ep-info">
+              <h5>Ep 3: Quantum Computing</h5>
+              <p>Michio Kaku • 1h 50m</p>
+            </div>
+          </div>
+          <div class="vp-ep-item" onclick="window.location.href='404.html'">
+            <img src="images/unsplash_153174602079_f1d6d2b3.webp" alt="Ep 4" class="vp-ep-thumb">
+            <div class="vp-ep-info">
+              <h5>Ep 4: Tech &amp; Ethics</h5>
+              <p>Yuval Harari • 2h 05m</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 3: CURATED DISCOVERIES (4-Column Grid)
+  ═══════════════════════════════════════════ -->
+  <section class="vp-discovery-wall">
+    <div class="container">
+      <h2 class="section-title" style="text-align: center;">Curated <span class="accent">Discoveries</span></h2>
+      <p style="text-align: center; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 10px auto;">Dive into our most cinematic, premium video podcasts tailored to your tastes.</p>
+      
+      <div class="vp-wall-grid">
+
+        <!-- Card 1 -->
+        <div class="vp-wall-item" onclick="window.location.href='404.html'">
+          <div class="vp-wall-img-wrap">
+            <img src="images/unsplash_149479010837_b95a84ba.webp" alt="Design Thinking">
+            <span class="vp-wall-ep-badge">62</span>
+            <div class="vp-wall-play"><i class="material-icons">play_arrow</i></div>
+          </div>
+          <div class="vp-wall-body">
+            <div class="vp-wall-info-row">
+              <span class="ep-c"><i class="material-icons">mic</i> 62 Episodes</span>
+              <span class="cat-lbl">Creative</span>
+            </div>
+            <h3 class="vp-wall-title">The Art of Design Thinking</h3>
+            <p class="vp-wall-author">By WpCasterPro</p>
+          </div>
+        </div>
+
+        <!-- Card 2 -->
+        <div class="vp-wall-item" onclick="window.location.href='404.html'">
+          <div class="vp-wall-img-wrap">
+            <img src="images/unsplash_151938995047_7e571d97.webp" alt="Business Mavericks">
+            <span class="vp-wall-ep-badge">54</span>
+            <div class="vp-wall-play"><i class="material-icons">play_arrow</i></div>
+          </div>
+          <div class="vp-wall-body">
+            <div class="vp-wall-info-row">
+              <span class="ep-c"><i class="material-icons">mic</i> 54 Episodes</span>
+              <span class="cat-lbl">Business</span>
+            </div>
+            <h3 class="vp-wall-title">Business Mavericks</h3>
+            <p class="vp-wall-author">By WpCasterPro</p>
+          </div>
+        </div>
+
+        <!-- Card 3 -->
+        <div class="vp-wall-item" onclick="window.location.href='404.html'">
+          <div class="vp-wall-img-wrap">
+            <img src="images/about9theme.webp" alt="Wellness">
+            <span class="vp-wall-ep-badge">55</span>
+            <div class="vp-wall-play"><i class="material-icons">play_arrow</i></div>
+          </div>
+          <div class="vp-wall-body">
+            <div class="vp-wall-info-row">
+              <span class="ep-c"><i class="material-icons">mic</i> 55 Episodes</span>
+              <span class="cat-lbl">Wellness</span>
+            </div>
+            <h3 class="vp-wall-title">Optimizing Your Daily Routine</h3>
+            <p class="vp-wall-author">By WpCasterPro</p>
+          </div>
+        </div>
+
+        <!-- Card 4 -->
+        <div class="vp-wall-item" onclick="window.location.href='404.html'">
+          <div class="vp-wall-img-wrap">
+            <img src="images/unsplash_151877066043_b8c8f420.webp" alt="Tech Reviews">
+            <span class="vp-wall-ep-badge">63</span>
+            <div class="vp-wall-play"><i class="material-icons">play_arrow</i></div>
+          </div>
+          <div class="vp-wall-body">
+            <div class="vp-wall-info-row">
+              <span class="ep-c"><i class="material-icons">mic</i> 63 Episodes</span>
+              <span class="cat-lbl">Technology</span>
+            </div>
+            <h3 class="vp-wall-title">Next-Gen Tech Reviews</h3>
+            <p class="vp-wall-author">By WpCasterPro</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 4: CREATOR ECOSYSTEM
+  ═══════════════════════════════════════════ -->
+  <section class="vp-creator-ecosystem">
+    <div class="container">
+      <h2 class="section-title gs-reveal" style="text-align: center;">Creator <span class="accent">Ecosystem</span></h2>
+      <p style="text-align: center; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto 40px auto;">Connect with the brilliant minds behind the lens. A network of cinematic storytellers.</p>
+      
+      <div class="ce-layout">
+        <!-- Connecting SVG Lines -->
+        <svg class="ce-svg-lines" viewBox="0 0 1400 800" preserveAspectRatio="none">
+          <path class="ce-line" d="M 250 400 Q 600 200 1000 200" />
+          <path class="ce-line" d="M 300 450 Q 800 500 1200 400" />
+          <path class="ce-line" d="M 250 500 Q 600 650 950 600" />
+        </svg>
+
+        <!-- Main Creator -->
+        <div class="ce-main-creator gs-reveal" onclick="window.location.href='404.html'">
+          <img src="images/about8theme.webp" alt="Jordan Hayes">
+          <div class="ce-main-overlay">
+            <h3 style="font-size: 3rem; font-weight: 900; margin-bottom: 5px; line-height: 1.1;">Jordan<br>Hayes</h3>
+            <p style="color: var(--primary-color); font-weight: 700; text-transform: uppercase; letter-spacing: 1px; font-size: 0.9rem;">Documentary Filmmaker</p>
+          </div>
+        </div>
+        
+        <!-- Floating Badges -->
+        <div class="ce-badge ce-b1 gs-reveal">
+          <span class="ce-badge-val counter" data-target="4.5" data-suffix="M">0</span>
+          <span class="ce-badge-lbl">Followers</span>
+        </div>
+        
+        <div class="ce-badge ce-b2 gs-reveal">
+          <span class="ce-badge-val counter" data-target="180" data-suffix="+">0</span>
+          <span class="ce-badge-lbl">Episodes</span>
+        </div>
+        
+        <!-- Orbiting Thumbs -->
+        <div class="ce-orbit-track">
+          <div class="ce-orbit-item"><img src="images/unsplash_150741324516_0ff85142.webp" alt="Ep"></div>
+          <div class="ce-orbit-item ce-oi-2"><img src="images/unsplash_147873727023_ddd5e59d.webp" alt="Ep"></div>
+        </div>
+        
+        <!-- Floating Nodes -->
+        <div class="ce-network-nodes">
+          <div class="ce-node ce-n1 gs-slide-left" onclick="window.location.href='404.html'">
+            <img src="images/woman_44_11c69897.webp" alt="Aisha Nkosi">
+            <div class="ce-node-info">
+              <h5>Aisha Nkosi</h5>
+              <p>Culture & Music • 1.9M Subs</p>
+            </div>
+          </div>
+          
+          <div class="ce-node ce-n2 gs-slide-left" onclick="window.location.href='404.html'">
+            <img src="images/man_24_09192e5d.webp" alt="David Smith">
+            <div class="ce-node-info">
+              <h5>David Smith</h5>
+              <p>Business Tactics • 800K Subs</p>
+            </div>
+          </div>
+          
+          <div class="ce-node ce-n3 gs-slide-left" onclick="window.location.href='404.html'">
+            <img src="images/woman_23_34f43382.webp" alt="Dr. Sarah Lee">
+            <div class="ce-node-info">
+              <h5>Dr. Sarah Lee</h5>
+              <p>Science & Space • 1.2M Subs</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 5: IMMERSIVE WATCH EXPERIENCE
+  ═══════════════════════════════════════════ -->
+  <section class="vp-immersive">
+    <div class="iw-ambient-glow"></div>
+    
+    <!-- Connecting SVG Lines -->
+    <svg class="iw-svg-layer" viewBox="0 0 1600 1100" preserveAspectRatio="none">
+      <path class="iw-line" d="M 250 200 L 700 400" />
+      <path class="iw-line" d="M 250 850 L 700 600" />
+      <path class="iw-line" d="M 1300 250 L 900 400" />
+      <path class="iw-line" d="M 1300 800 L 900 600" />
+    </svg>
+
+    <div class="iw-center-player gs-scale-up" onclick="window.location.href='404.html'">
+      <img src="images/unsplash_159369782125_99adef8d.webp" alt="Player">
+      <div class="iw-play-btn"><i class="material-icons">play_arrow</i></div>
+    </div>
+    
+    <!-- AI Recommendation Widget -->
+    <div class="iw-widget iw-w-ai gs-slide-right">
+      <div class="iw-widget-title"><i class="material-icons">auto_awesome</i> AI Recommended</div>
+      <div class="iw-w-ai-content">
+        <img src="images/unsplash_151632149748_ad5da2cf.webp" alt="Rec">
+        <div>
+          <h6>The Neuralink Update</h6>
+          <p>Because you watched AI Future</p>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Equalizer Widget -->
+    <div class="iw-widget iw-w-eq gs-slide-left">
+      <div class="iw-widget-title"><i class="material-icons">graphic_eq</i> Audio Engine</div>
+      <p style="font-size:0.8rem; color:rgba(255,255,255,0.7); margin:0;">Spatial Audio Active</p>
+      <div class="iw-eq-bars">
+        <div></div><div></div><div></div><div></div><div></div>
+      </div>
+    </div>
+    
+    <!-- Live Chat Widget -->
+    <div class="iw-widget iw-w-chat gs-slide-right">
+      <div class="iw-widget-title"><i class="material-icons">forum</i> Live Chat</div>
+      <div class="iw-chat-msg">
+        <img src="images/man_11_8bb50ac1.webp" alt="User">
+        <span>This cinematography is insane! 🔥</span>
+      </div>
+      <div class="iw-chat-msg">
+        <img src="images/woman_15_b767e19a.webp" alt="User">
+        <span>Totally agree, 4K looks amazing.</span>
+      </div>
+    </div>
+    
+    <!-- Playlist Widget -->
+    <div class="iw-widget iw-w-playlist gs-slide-left">
+      <div class="iw-widget-title"><i class="material-icons">queue_music</i> Up Next</div>
+      <div class="iw-pl-item active">
+        <span>1. The Future of AI</span>
+        <i class="material-icons">volume_up</i>
+      </div>
+      <div class="iw-pl-item">
+        <span>2. Neuralink Updates</span>
+        <i class="material-icons">play_circle_outline</i>
+      </div>
+      <div class="iw-pl-item">
+        <span>3. Quantum Computing</span>
+        <i class="material-icons">play_circle_outline</i>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 6: EDITOR'S VIDEO MAGAZINE
+  ═══════════════════════════════════════════ -->
+  <section class="vp-magazine">
+    <div class="container">
+      <h2 class="section-title gs-reveal" style="text-align: center;">Editor's <span class="accent">Magazine</span></h2>
+      <p style="text-align: center; color: rgba(255,255,255,0.7); max-width: 600px; margin: 0 auto;">Explore our meticulously curated layout of the most visually stunning podcast series.</p>
+      
+      <div class="mag-grid">
+        <!-- Large Featured -->
+        <div class="mag-item mag-item-large gs-reveal" onclick="window.location.href='404.html'">
+          <img src="images/unsplash_153174602079_f1d6d2b3.webp" alt="Tech">
+          <div class="mag-overlay">
+            <span class="mag-cat">Technology</span>
+            <div class="mag-content">
+              <h3 class="mag-title">The Tech Pioneers:<br>Building the Future</h3>
+              <div class="mag-meta">
+                <span><i class="material-icons" style="font-size:1rem;vertical-align:middle;color:var(--primary-color);">video_library</i> 12 Episodes</span>
+                <span><i class="material-icons" style="font-size:1rem;vertical-align:middle;color:var(--primary-color);">visibility</i> 2.4M Views</span>
+              </div>
+            </div>
+          </div>
+          <div class="mag-play-hover"><i class="material-icons">play_arrow</i></div>
+        </div>
+        
+        <!-- Tall Vertical -->
+        <div class="mag-item mag-item-tall gs-slide-left" onclick="window.location.href='404.html'">
+          <img src="images/unsplash_146233194002_e5f90ea0.webp" alt="Science">
+          <div class="mag-overlay">
+            <span class="mag-cat">Science</span>
+            <div class="mag-content">
+              <h3 class="mag-title">Cosmic Mysteries</h3>
+              <div class="mag-meta">
+                <span><i class="material-icons" style="font-size:1rem;vertical-align:middle;color:var(--primary-color);">video_library</i> 8 Episodes</span>
+              </div>
+            </div>
+          </div>
+          <div class="mag-play-hover"><i class="material-icons">play_arrow</i></div>
+        </div>
+        
+        <!-- Wide Cinematic -->
+        <div class="mag-item mag-item-wide gs-slide-right" onclick="window.location.href='404.html'">
+          <img src="images/unsplash_151877066043_b8c8f420.webp" alt="Mindfulness">
+          <div class="mag-overlay">
+            <span class="mag-cat">Lifestyle</span>
+            <div class="mag-content">
+              <h3 class="mag-title" style="font-size: 2rem;">Mindfulness Masters</h3>
+              <div class="mag-meta">
+                <span><i class="material-icons" style="font-size:1rem;vertical-align:middle;color:var(--primary-color);">video_library</i> 15 Episodes</span>
+              </div>
+            </div>
+          </div>
+          <div class="mag-play-hover"><i class="material-icons">play_arrow</i></div>
+        </div>
+        
+        <!-- Small Mini -->
+        <div class="mag-item mag-item-small-1 gs-reveal" onclick="window.location.href='404.html'">
+          <img src="images/unsplash_150574042092_91f34414.webp" alt="Health">
+          <div class="mag-overlay">
+            <span class="mag-cat">Health</span>
+            <div class="mag-content">
+              <h3 class="mag-title" style="font-size: 1.5rem;">Biohacking 101</h3>
+            </div>
+          </div>
+          <div class="mag-play-hover"><i class="material-icons">play_arrow</i></div>
+        </div>
+        
+        <!-- Small Mini 2 -->
+        <div class="mag-item mag-item-small-2 gs-reveal" onclick="window.location.href='404.html'">
+          <img src="images/unsplash_158990330890_4dc0908d.webp" alt="True Crime">
+          <div class="mag-overlay">
+            <span class="mag-cat">True Crime</span>
+            <div class="mag-content">
+              <h3 class="mag-title" style="font-size: 1.5rem;">Unsolved Files</h3>
+            </div>
+          </div>
+          <div class="mag-play-hover"><i class="material-icons">play_arrow</i></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       SECTION 7: CINEMATIC ENDING CTA
+  ═══════════════════════════════════════════ -->
+  <section class="vp-end-cta">
+    <div class="vp-end-bg"></div>
+    <div class="vp-end-particles"></div>
+    
+    <!-- Floating Thumbnails -->
+    <div class="vp-float-thumb vp-ft-1"><img src="images/unsplash_151877066043_ecf13dd9.webp" alt="thumb"></div>
+    <div class="vp-float-thumb vp-ft-2"><img src="images/unsplash_151632149748_ad5da2cf.webp" alt="thumb"></div>
+    <div class="vp-float-thumb vp-ft-3"><img src="images/about7theme.webp" alt="thumb"></div>
+    <div class="vp-float-thumb vp-ft-4"><img src="images/unsplash_159848803513_652d7fd5.webp" alt="thumb"></div>
+
+    <div class="vp-end-content gs-scale-up">
+      <h2 class="vp-end-title">Watch Stories That Inspire Every Moment.</h2>
+      <div class="vp-end-buttons">
+        <button class="btn btn-primary" onclick="window.location.href='login.html'">Get Premium</button>
+        <button class="btn btn-outline" onclick="window.location.href='discover.html'">Explore Library</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+        <div class="footer-grid">
+            <div class="gs-reveal">
+                <a href="index.html" class="footer-logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+                <p class="footer-text">The premium destination for audio and video podcasts. Experience crystal clear streaming and discover your next favorite creator.</p>
+                <div class="social-links">
+                    <a href="404.html"><i class="material-icons">podcasts</i></a>
+                    <a href="404.html"><i class="material-icons">mic</i></a>
+                    <a href="404.html"><i class="material-icons">headphones</i></a>
+                    <a href="404.html"><i class="material-icons">rss_feed</i></a>
+                </div>
+            </div>
+            <div>
+                <h4>Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="podcasts.html">Podcasts</a></li>
+                    <li><a href="video-podcasts.html">Video Podcasts</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="discover.html">Discover</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Support</h4>
+                <ul class="footer-links">
+                    <li><a href="404.html">Contact Us</a></li>
+                    <li><a href="404.html">Help Center</a></li>
+                    <li><a href="404.html">Privacy Policy</a></li>
+                    <li><a href="404.html">Terms & Conditions</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4>Newsletter</h4>
+                <p class="footer-text">Get weekly recommendations.</p>
+                <form class="newsletter-form" action="404.html" method="GET">
+                    <input type="email" name="email" placeholder="Email" required>
+                    <button type="submit" class="btn btn-primary" style="padding: 10px 15px;"><i class="material-icons">send</i></button>
+                </form>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Stackly. All rights reserved. Designed for Premium Listening.</p>
+        </div>
+    </div>
+  </footer>
+
+  <!-- GSAP & ScrollTrigger -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Initialize GSAP ScrollTrigger
+      gsap.registerPlugin(ScrollTrigger);
+
+      // Mobile Menu Toggle
+      const hamburger = document.querySelector('.hamburger');
+      const navLinks = document.querySelector('.nav-links');
+      if (hamburger && navLinks) {
+        hamburger.addEventListener('click', () => {
+          navLinks.classList.toggle('active');
+        });
+      }
+
+      // 1. Reveal Animations (Fade Up)
+      gsap.utils.toArray('.gs-reveal').forEach(elem => {
+        gsap.fromTo(elem, 
+          { y: 50, opacity: 0 },
+          {
+            scrollTrigger: {
+              trigger: elem,
+              start: "top 85%",
+              toggleActions: "play none none none"
+            },
+            y: 0,
+            opacity: 1,
+            duration: 1,
+            ease: "power3.out"
+          }
+        );
+      });
+
+      // 2. Slide In Left/Right
+      gsap.utils.toArray('.gs-slide-left').forEach(elem => {
+        gsap.fromTo(elem, 
+          { x: 50, opacity: 0 },
+          {
+            scrollTrigger: { trigger: elem, start: "top 85%" },
+            x: 0, opacity: 1, duration: 1, ease: "power3.out"
+          }
+        );
+      });
+
+      gsap.utils.toArray('.gs-slide-right').forEach(elem => {
+        gsap.fromTo(elem, 
+          { x: -50, opacity: 0 },
+          {
+            scrollTrigger: { trigger: elem, start: "top 85%" },
+            x: 0, opacity: 1, duration: 1, ease: "power3.out", stagger: 0.2
+          }
+        );
+      });
+
+      // 3. Scale Up
+      gsap.utils.toArray('.gs-scale-up').forEach(elem => {
+        gsap.fromTo(elem, 
+          { scale: 0.8, opacity: 0 },
+          {
+            scrollTrigger: { trigger: elem, start: "top 85%" },
+            scale: 1, opacity: 1, duration: 1.2, ease: "expo.out"
+          }
+        );
+      });
+
+      // 4. Subtle Parallax / Float
+      gsap.utils.toArray('.gs-float').forEach(elem => {
+        gsap.to(elem, {
+          y: -20,
+          ease: "sine.inOut",
+          duration: 2,
+          yoyo: true,
+          repeat: -1
+        });
+      });
+      
+      // 5. Hero Waveform init
+      // Note: The hero waveform is animated via CSS, no JS needed.
+
+      // 6. Counter Animation — animate .counter elements when section scrolls into view
+      function animateCounter(el) {
+        const target = parseFloat(el.getAttribute('data-target'));
+        const suffix = el.getAttribute('data-suffix') || '';
+        const isDecimal = target % 1 !== 0;
+        const duration = 2000; // ms
+        const start = performance.now();
+        function step(now) {
+          const elapsed = now - start;
+          const progress = Math.min(elapsed / duration, 1);
+          // Ease out cubic
+          const eased = 1 - Math.pow(1 - progress, 3);
+          const current = target * eased;
+          el.textContent = (isDecimal ? current.toFixed(1) : Math.floor(current)) + suffix;
+          if (progress < 1) requestAnimationFrame(step);
+          else el.textContent = (isDecimal ? target.toFixed(1) : Math.floor(target)) + suffix;
+        }
+        requestAnimationFrame(step);
+      }
+
+      const counters = document.querySelectorAll('.counter');
+      if (counters.length > 0) {
+        const counterObserver = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+            if (entry.isIntersecting) {
+              animateCounter(entry.target);
+              counterObserver.unobserve(entry.target);
+            }
+          });
+        }, { threshold: 0.3 });
+        counters.forEach(c => counterObserver.observe(c));
+      }
+    });
+  </script>
+</body>
+</html>

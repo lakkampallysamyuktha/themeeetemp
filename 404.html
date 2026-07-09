@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 Not Found - PodStream</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body { padding-bottom: 0 !important; }
+        .static-logo { width: 40px; height: 40px; object-fit: contain; }
+        .logo-wrap { position: absolute; top: 30px; left: 30px; display: flex; align-items: center; gap: 10px; font-weight: 800; font-size: 1.5rem; color: #fff; text-decoration: none; z-index: 10; }
+    </style>
+</head>
+<body>
+
+
+    <!-- 404 SECTION -->
+    <section class="error-page" style="height: 100vh; width: 100vw; display: flex; align-items: center; justify-content: center; text-align: center; position: relative; overflow: hidden;">
+        <!-- Animated Background Element -->
+        <div style="position: absolute; width: 400px; height: 400px; background: var(--primary-color); filter: blur(200px); opacity: 0.3; border-radius: 50%; z-index: -1;"></div>
+        
+        <div class="container">
+            <h1 style="font-size: 10rem; font-weight: 800; color: var(--primary-color); line-height: 1; text-shadow: 0 10px 30px rgba(114,46,209,0.4); margin-bottom: 20px;">404</h1>
+            <h2 style="font-size: 2.5rem; margin-bottom: 15px;">Dead Air.</h2>
+            <p style="font-size: 1.1rem; color: rgba(255,255,255,0.6); max-width: 500px; margin: 0 auto 40px auto;">
+                Oops! Looks like this episode couldn't be found. The link might be broken, or the page may have been removed. Let's get you back on frequency.
+            </p>
+            <div style="display: flex; gap: 20px; justify-content: center;">
+                <button onclick="window.history.back()" class="btn btn-outline" style="cursor: pointer; display: flex; align-items: center; gap: 5px;"><i class="material-icons">arrow_back</i> Go Back</button>
+                <a href="index.html" class="btn btn-primary" style="display: flex; align-items: center; gap: 5px;"><i class="material-icons">home</i> Go to Home</a>
+            </div>
+        </div>
+    </section>
+
+</body>
+</html>

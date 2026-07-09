@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>About Us – PodStream</title>
+
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* ─── CSS Variables ─────────────────────────────────────────── */
+    :root {
+      --primary-color: #A85BD8;
+      --bg-color: #1F2430;
+      --text-color: #FFFFFF;
+      --glass-bg: rgba(255,255,255,0.05);
+      --glass-border: rgba(255,255,255,0.1);
+      --primary-rgb: 168, 91, 216;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-color);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+      padding-bottom: 0 !important;
+    }
+
+    /* ─── Utility ───────────────────────────────────────────────── */
+    .container { max-width: 1200px; margin: 0 auto; padding: 0 24px; }
+    .section-title {
+      font-size: clamp(2rem, 4vw, 2.8rem);
+      font-weight: 800;
+      text-align: center;
+      margin-bottom: 64px;
+      position: relative;
+    }
+    .section-title span { color: var(--primary-color); }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 64px;
+      height: 4px;
+      background: var(--primary-color);
+      border-radius: 4px;
+      margin: 14px auto 0;
+    }
+
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 28px; border-radius: 50px; font-size: 0.95rem;
+      font-weight: 600; cursor: pointer; border: none; text-decoration: none;
+      transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .btn:hover { transform: translateY(-3px); }
+    .btn-primary {
+      background: var(--primary-color);
+      color: #fff;
+      box-shadow: 0 4px 20px rgba(var(--primary-rgb), 0.35);
+    }
+    .btn-primary:hover { box-shadow: 0 8px 30px rgba(var(--primary-rgb), 0.55); }
+    .btn-outline {
+      background: transparent;
+      color: #fff;
+      border: 2px solid rgba(255,255,255,0.25);
+    }
+    .btn-outline:hover { border-color: var(--primary-color); color: #111 !important; background: var(--primary-color); }
+
+    /* ─── Glass card ────────────────────────────────────────────── */
+    .glass-card {
+      background: var(--glass-bg);
+      border: 1px solid var(--glass-border);
+      border-radius: 20px;
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    /* ========== HERO ========== */
+    .pods-hero {
+      position: relative;
+      min-height: 70vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .pods-hero__bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('images/unsplash_158990330890_4dc0908d.webp');
+      background-size: cover;
+      background-position: center;
+      filter: blur(3px) brightness(0.35);
+      transform: scale(1.08);
+    }
+
+    .pods-hero__overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg,
+        rgba(31,36,48,0.92) 0%,
+        rgba(168,91,216,0.18) 50%,
+        rgba(31,36,48,0.95) 100%);
+    }
+
+    .pods-hero__content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      max-width: 780px;
+      padding: 2rem 1.5rem;
+      width: 100%;
+    }
+
+    .pods-hero__title {
+      font-size: clamp(2rem, 5vw, 3.6rem);
+      font-weight: 800;
+      line-height: 1.15;
+      letter-spacing: -0.5px;
+      opacity: 0;
+      transform: translateY(40px);
+      margin-bottom: 1rem;
+      animation: fadeInUp 0.8s forwards 0.2s;
+    }
+
+    .pods-hero__title .highlight {
+      color: var(--primary-color);
+      text-shadow: 0 0 30px rgba(168,91,216,0.6);
+    }
+
+    .pods-hero__subtitle {
+      font-size: clamp(1rem, 2vw, 1.25rem);
+      color: rgba(255,255,255,0.75);
+      margin-bottom: 2.2rem;
+      opacity: 0;
+      transform: translateY(30px);
+      animation: fadeInUp 0.8s forwards 0.4s;
+    }
+
+    /* Floating pill badges */
+    .pods-badge {
+      position: absolute;
+      z-index: 3;
+      padding: 0.45rem 1.1rem;
+      border-radius: 50px;
+      font-size: 0.72rem;
+      font-weight: 700;
+      letter-spacing: 1.5px;
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255,255,255,0.18);
+      animation: badgeFloat 3.5s ease-in-out infinite;
+      white-space: nowrap;
+    }
+
+    .pods-badge--new {
+      top: 22%;
+      left: 8%;
+      background: rgba(168,91,216,0.3);
+      color: var(--primary-color);
+      animation-delay: 0s;
+    }
+
+    .pods-badge--trending {
+      top: 30%;
+      right: 8%;
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.9);
+      animation-delay: 1.2s;
+    }
+
+    @keyframes badgeFloat {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-12px); }
+    }
+
+    @keyframes fadeInUp {
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Waveform animation */
+    .pods-waveform {
+      position: absolute;
+      bottom: 18px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 3;
+      display: flex;
+      align-items: flex-end;
+      gap: 4px;
+      height: 40px;
+    }
+
+    .pods-waveform span {
+      display: block;
+      width: 4px;
+      border-radius: 2px;
+      background: rgba(168,91,216,0.7);
+      animation: waveBar 1.2s ease-in-out infinite;
+    }
+
+    .pods-waveform span:nth-child(1)  { height: 12px; animation-delay: 0s; }
+    .pods-waveform span:nth-child(2)  { height: 24px; animation-delay: 0.1s; }
+    .pods-waveform span:nth-child(3)  { height: 36px; animation-delay: 0.2s; }
+    .pods-waveform span:nth-child(4)  { height: 28px; animation-delay: 0.3s; }
+    .pods-waveform span:nth-child(5)  { height: 18px; animation-delay: 0.4s; }
+    .pods-waveform span:nth-child(6)  { height: 38px; animation-delay: 0.15s; }
+    .pods-waveform span:nth-child(7)  { height: 22px; animation-delay: 0.25s; }
+    .pods-waveform span:nth-child(8)  { height: 32px; animation-delay: 0.05s; }
+    .pods-waveform span:nth-child(9)  { height: 16px; animation-delay: 0.35s; }
+    .pods-waveform span:nth-child(10) { height: 26px; animation-delay: 0.45s; }
+    .pods-waveform span:nth-child(11) { height: 38px; animation-delay: 0.1s; }
+    .pods-waveform span:nth-child(12) { height: 20px; animation-delay: 0.2s; }
+    .pods-waveform span:nth-child(13) { height: 30px; animation-delay: 0.3s; }
+
+    @keyframes waveBar {
+      0%, 100% { transform: scaleY(1); opacity: 0.7; }
+      50% { transform: scaleY(0.35); opacity: 1; }
+    }
+
+    /* ══════════════════════════════════════════════════════════════
+       SECTION 2 – THE PODSTREAM JOURNEY
+    ══════════════════════════════════════════════════════════════ */
+    .journey-section {
+      padding: 140px 0;
+      position: relative;
+      overflow: hidden;
+    }
+    .journey-waveform-bg {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      pointer-events: none;
+      z-index: 0;
+      background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 800" preserveAspectRatio="none"><path d="M0,400 C320,100 420,700 720,400 C1020,100 1120,700 1440,400" fill="none" stroke="rgba(168,91,216,0.15)" stroke-width="4" stroke-dasharray="10 10"/></svg>') no-repeat center/cover;
+    }
+    .journey-grid {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      gap: 100px;
+    }
+    .journey-card {
+      display: grid;
+      grid-template-columns: 1fr 1.2fr;
+      gap: 50px;
+      align-items: center;
+      position: relative;
+    }
+    .journey-card:nth-child(even) {
+      grid-template-columns: 1.2fr 1fr;
+    }
+    .journey-card:nth-child(even) .journey-content {
+      order: -1;
+    }
+    .journey-year {
+      position: absolute;
+      top: -30px;
+      left: -30px;
+      font-size: 4.5rem;
+      font-weight: 900;
+      color: transparent;
+      -webkit-text-stroke: 2px rgba(168,91,216,0.4);
+      z-index: 0;
+      text-shadow: 0 0 20px rgba(168,91,216,0.2);
+    }
+    .journey-card:nth-child(even) .journey-year {
+      left: auto; right: -30px;
+    }
+    .journey-image {
+      position: relative;
+      border-radius: 30px;
+      overflow: hidden;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+      aspect-ratio: 4/3;
+      z-index: 2;
+    }
+    .journey-image img {
+      width: 100%; height: 100%; object-fit: cover;
+      transition: transform 0.6s ease;
+    }
+    .journey-card:hover .journey-image img { transform: scale(1.05); }
+    .journey-content {
+      position: relative;
+      z-index: 2;
+      padding: 40px;
+      background: var(--glass-bg);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--glass-border);
+      border-radius: 24px;
+    }
+    .journey-content h3 { font-size: 2rem; color: var(--primary-color); margin-bottom: 20px; }
+    .journey-content p { font-size: 1.1rem; line-height: 1.8; color: rgba(255,255,255,0.7); }
+
+    /* ══════════════════════════════════════════════════════════════
+       SECTION 3 – INSIDE PODSTREAM (EDITORIAL SPLIT SCREEN)
+    ══════════════════════════════════════════════════════════════ */
+    .inside-section {
+      padding: 120px 0;
+      position: relative;
+    }
+    .inside-grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 60px;
+      align-items: stretch;
+    }
+    .inside-left {
+      border-radius: 30px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+      min-height: 500px;
+    }
+    .inside-left img {
+      width: 100%; height: 100%; object-fit: cover;
+    }
+    .inside-left-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to top, rgba(31,36,48,0.9) 0%, transparent 50%);
+      display: flex; align-items: flex-end; padding: 40px;
+    }
+    .inside-left-title { font-size: 2.5rem; font-weight: 800; line-height: 1.2; text-shadow: 0 10px 20px rgba(0,0,0,0.5); }
+    .inside-right {
+      display: flex; flex-direction: column; gap: 20px;
+    }
+    .expand-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 30px;
+      cursor: default;
+      transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+      position: relative;
+      overflow: hidden;
+      display: flex; flex-direction: column; justify-content: center;
+      flex: 1;
+    }
+    .expand-card:hover {
+      background: rgba(168,91,216,0.1);
+      border-color: rgba(168,91,216,0.4);
+      flex: 2;
+    }
+    .expand-card h4 {
+      font-size: 1.5rem; font-weight: 700; margin-bottom: 10px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .expand-card h4 i { transition: transform 0.4s; }
+    .expand-card:hover h4 i { transform: rotate(90deg); color: var(--primary-color); }
+    .expand-desc {
+      height: 0; opacity: 0; overflow: hidden;
+      transition: height 0.4s ease, opacity 0.4s ease;
+      font-size: 0.95rem; line-height: 1.6; color: rgba(255,255,255,0.6);
+    }
+    .expand-card:hover .expand-desc { height: 60px; opacity: 1; margin-top: 10px; }
+
+    /* ══════════════════════════════════════════════════════════════
+       SECTION 4 – PODCAST UNIVERSE
+    ══════════════════════════════════════════════════════════════ */
+    .universe-section {
+      padding: 100px 0;
+      position: relative;
+      text-align: center;
+      overflow: hidden;
+    }
+    .universe-network {
+      position: relative;
+      width: 600px; height: 600px;
+      margin: 60px auto 0;
+    }
+    .universe-center {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 140px; height: 140px;
+      background: var(--primary-color);
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 0 50px rgba(168,91,216,0.6), inset 0 0 20px rgba(255,255,255,0.5);
+      z-index: 10;
+      font-weight: 800; font-size: 1.2rem;
+      animation: pulseGlow 2s infinite alternate;
+    }
+    @keyframes pulseGlow {
+      from { box-shadow: 0 0 40px rgba(168,91,216,0.4), inset 0 0 10px rgba(255,255,255,0.3); transform: translate(-50%, -50%) scale(1); }
+      to { box-shadow: 0 0 80px rgba(168,91,216,0.8), inset 0 0 30px rgba(255,255,255,0.6); transform: translate(-50%, -50%) scale(1.05); }
+    }
+    .orbit-ring {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      border: 1px dashed rgba(255,255,255,0.15);
+      border-radius: 50%;
+    }
+    .ring-1 { width: 340px; height: 340px; animation: spin 40s linear infinite; }
+    .ring-2 { width: 540px; height: 540px; animation: spin 60s linear infinite reverse; }
+    @keyframes spin { 100% { transform: translate(-50%, -50%) rotate(360deg); } }
+    
+    .node {
+      position: absolute;
+      width: 100px; height: 100px;
+      background: rgba(31,36,48,0.9);
+      border: 2px solid rgba(168,91,216,0.5);
+      border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+    }
+    /* Counter rotation to keep text upright */
+    .ring-1 .node { animation: spin 40s linear infinite reverse; }
+    .ring-2 .node { animation: spin 60s linear infinite; }
+    
+    .node strong { font-size: 1.4rem; font-weight: 800; color: #fff; line-height: 1; }
+    .node span { font-size: 0.7rem; color: rgba(255,255,255,0.6); text-transform: uppercase; margin-top: 4px; }
+    
+    .node-1 { top: -50px; left: calc(50% - 50px); }
+    .node-2 { bottom: -50px; left: calc(50% - 50px); }
+    .node-3 { top: 20%; left: -50px; }
+    .node-4 { top: 20%; right: -50px; }
+    .node-5 { bottom: 5%; left: 20%; }
+
+    /* ══════════════════════════════════════════════════════════════
+       SECTION 5 – CREATOR SHOWCASE (BENTO GRID)
+    ══════════════════════════════════════════════════════════════ */
+    .bento-section { padding: 120px 0; }
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-auto-rows: 250px;
+      gap: 24px;
+    }
+    .bento-card {
+      position: relative;
+      border-radius: 24px;
+      overflow: hidden;
+      background: #000;
+      cursor: default;
+    }
+    .bento-card img {
+      width: 100%; height: 100%; object-fit: cover; opacity: 0.7;
+      transition: transform 0.6s ease, opacity 0.6s ease;
+    }
+    .bento-card:hover img { transform: scale(1.08); opacity: 0.4; }
+    .bento-large { grid-column: span 2; grid-row: span 2; }
+    .bento-tall { grid-column: span 1; grid-row: span 2; }
+    .bento-wide { grid-column: span 2; grid-row: span 1; }
+    
+    .bento-info {
+      position: absolute;
+      inset: 0;
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      background: linear-gradient(to top, rgba(0,0,0,0.9) 0%, transparent 60%);
+    }
+    .bento-large .bento-info { padding: 40px; }
+    .bento-play {
+      width: 50px; height: 50px; background: var(--primary-color); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.5);
+      opacity: 0; transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      z-index: 10;
+      color: #fff;
+      text-decoration: none;
+    }
+    .bento-card:hover .bento-play { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    .bento-name { font-size: 1.4rem; font-weight: 800; margin-bottom: 5px; transform: translateY(20px); transition: transform 0.4s ease; }
+    .bento-large .bento-name { font-size: 2.2rem; }
+    .bento-stats { display: flex; gap: 15px; font-size: 0.85rem; color: rgba(255,255,255,0.7); opacity: 0; transform: translateY(20px); transition: all 0.4s ease 0.1s; }
+    .bento-card:hover .bento-name { transform: translateY(0); }
+    .bento-card:hover .bento-stats { opacity: 1; transform: translateY(0); }
+    
+    /* ══════════════════════════════════════════════════════════════
+       SECTION 6 – WHY PODSTREAM & PREMIUM CTA
+    ══════════════════════════════════════════════════════════════ */
+    .why-section {
+      padding: 100px 0 60px;
+      position: relative;
+    }
+    .why-center-glow {
+      position: absolute;
+      top: 50%; left: 50%; transform: translate(-50%, -50%);
+      width: 800px; height: 800px;
+      background: radial-gradient(circle, rgba(168,91,216,0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .features-orbit-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 40px;
+      position: relative;
+      z-index: 2;
+    }
+    .feature-orbit-card {
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.1);
+      backdrop-filter: blur(20px);
+      border-radius: 24px;
+      padding: 40px 30px;
+      text-align: center;
+      transition: transform 0.4s ease, box-shadow 0.4s ease;
+    }
+    .feature-orbit-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 20px 40px rgba(168,91,216,0.2);
+      border-color: rgba(168,91,216,0.4);
+    }
+    .f-icon { width: 60px; height: 60px; margin: 0 auto 20px; background: rgba(168,91,216,0.15); border-radius: 16px; display: flex; align-items: center; justify-content: center; color: var(--primary-color); }
+    
+    /* Premium CTA */
+    .premium-cta {
+      margin-top: 100px;
+      position: relative;
+      padding: 100px 40px;
+      border-radius: 40px;
+      background: linear-gradient(135deg, rgba(31,36,48,0.9), rgba(168,91,216,0.2));
+      border: 1px solid rgba(168,91,216,0.3);
+      text-align: center;
+      overflow: hidden;
+      box-shadow: 0 40px 100px rgba(0,0,0,0.6);
+    }
+    .cta-particles { position: absolute; inset: 0; background: url('images/unsplash_151877066043_ecf13dd9.webp') center/cover; opacity: 0.1; mix-blend-mode: overlay; pointer-events: none; }
+    .cta-content { position: relative; z-index: 2; }
+    .cta-title { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 900; margin-bottom: 30px; }
+    .cta-buttons { display: flex; justify-content: center; gap: 20px; }
+    .btn-magnetic {
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+    .btn-magnetic::after {
+      content: ''; position: absolute; top: 50%; left: 50%; width: 300px; height: 300px; background: rgba(255,255,255,0.2); border-radius: 50%; transform: translate(-50%, -50%) scale(0); transition: transform 0.6s ease; pointer-events: none;
+    }
+    .btn-magnetic:hover::after { transform: translate(-50%, -50%) scale(1); }
+
+    /* ─── Animation Classes ─────────────────────────────────────── */
+    .fade-up-element, .fade-down-element,
+    .fade-left-element, .fade-right-element,
+    .zoom-in-element, .zoom-out-element,
+    .flip-left-element, .flip-right-element {
+      opacity: 0;
+      transition: opacity 0.8s cubic-bezier(0.25, 0.8, 0.25, 1), transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    }
+    .fade-up-element     { transform: translateY(60px); }
+    .fade-down-element   { transform: translateY(-60px); }
+    .fade-left-element   { transform: translateX(-60px); }
+    .fade-right-element  { transform: translateX(60px); }
+    .zoom-in-element     { transform: scale(0.85); }
+    
+    .fade-up-element.is-visible, .fade-down-element.is-visible,
+    .fade-left-element.is-visible, .fade-right-element.is-visible,
+    .zoom-in-element.is-visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    /* ─── RESPONSIVE ────────────────────────────────────────────── */
+    @media (max-width: 1024px) {
+      .inside-grid { grid-template-columns: 1fr; }
+      .bento-grid { grid-template-columns: repeat(2, 1fr); }
+      .bento-large { grid-column: span 2; }
+      .bento-wide { grid-column: span 2; }
+      .features-orbit-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 768px) {
+      .journey-card, .journey-card:nth-child(even) { grid-template-columns: 1fr; gap: 30px; }
+      .journey-card:nth-child(even) .journey-content { order: 1; }
+      .journey-year { font-size: 3rem; top: -15px; left: 10px; }
+      .universe-network { width: 100%; height: 400px; margin-top: 20px; }
+      .ring-1 { width: 220px; height: 220px; }
+      .ring-2 { width: 340px; height: 340px; }
+      .node { width: 80px; height: 80px; }
+      .node strong { font-size: 1.1rem; }
+      .node span { font-size: 0.6rem; }
+      .features-orbit-grid { grid-template-columns: 1fr; }
+      .bento-grid { grid-template-columns: 1fr; grid-auto-rows: 220px; }
+      .bento-large, .bento-tall, .bento-wide { grid-column: 1 / -1; grid-row: span 1; }
+      .bento-large .bento-name { font-size: 1.5rem; }
+      .premium-cta { padding: 50px 20px; margin-top: 50px; border-radius: 20px; width: 100%; box-sizing: border-box; }
+      .cta-title { font-size: 2.2rem; word-wrap: break-word; }
+      .cta-buttons { flex-direction: column; width: 100%; }
+      .btn-magnetic { width: 100%; box-sizing: border-box; }
+    }
+    .section-subtitle {
+      font-size: 1.1rem;
+      color: rgba(255,255,255,0.7);
+      margin-top: -20px;
+      margin-bottom: 50px;
+      text-align: center;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      line-height: 1.6;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════════════════ HEADER ═══════════════════════════ -->
+  <header class="header glass">
+    <nav class="nav-container">
+            <a href="index.html" class="logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+      <ul class="nav-links">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="podcasts.html">Podcasts</a></li>
+        <li><a href="video-podcasts.html">Video Podcasts</a></li>
+                <li><a href="about.html" class="active">About</a></li>
+                <li><a href="discover.html">Discover</a></li>
+                <li class="mobile-login"><a href="login.html" class="btn btn-primary" style="margin-top: 15px; width: 100%; justify-content: center;">Login</a></li>
+            </ul>
+      <div class="nav-actions">
+        <i class="material-icons">search</i>
+        <i class="material-icons">notifications</i>
+        <img src="images/woman_44_11c69897.webp" alt="User" class="user-profile" loading="lazy">
+                <a href="login.html" class="btn btn-primary">Login</a>
+      </div>
+      <i class="material-icons hamburger">menu</i>
+    </nav>
+  </header>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 1 – HERO BANNER
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="pods-hero">
+    <div class="pods-hero__bg"></div>
+    <div class="pods-hero__overlay"></div>
+
+    <!-- Floating badges -->
+    <div class="pods-badge pods-badge--new">
+      <i class="material-icons" style="font-size:0.75rem;vertical-align:middle;">auto_awesome</i>
+      &nbsp;ABOUT PODSTREAM
+    </div>
+
+    <!-- Content -->
+    <div class="pods-hero__content">
+      <h1 class="pods-hero__title" id="hero-title">
+        The <span class="highlight">Voice</span> of a New Generation
+      </h1>
+      <p class="pods-hero__subtitle" id="hero-sub">
+        PodStream is where stories are born, ideas spread, and communities unite. We're rewriting the rules of audio storytelling.
+      </p>
+    </div>
+
+    <!-- Waveform decoration -->
+    <div class="pods-waveform" aria-hidden="true">
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span><span></span><span></span>
+      <span></span><span></span><span></span>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 2 – THE PODSTREAM JOURNEY
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="journey-section">
+    <div class="journey-waveform-bg"></div>
+    <div class="container">
+      <h2 class="section-title fade-up-element">The PodStream <span>Journey</span></h2>
+      <p class="section-subtitle fade-up-element" style="transition-delay: 0.1s;">From a small idea to a global revolution in audio storytelling.</p>
+      <div class="journey-grid">
+        
+        <div class="journey-card fade-up-element">
+          <div class="journey-image">
+            <div class="journey-year">2018</div>
+            <img src="images/unsplash_159369782125_99adef8d.webp" alt="The Idea">
+          </div>
+          <div class="journey-content">
+            <h3>The Genesis</h3>
+            <p>What started in a small garage with a single microphone and a passion for storytelling quickly grew into an idea that would challenge the status quo. We wanted to build a platform where audio could be as visually stunning as cinema.</p>
+          </div>
+        </div>
+
+        <div class="journey-card fade-up-element">
+          <div class="journey-image">
+            <div class="journey-year">2021</div>
+            <img src="images/unsplash_161287208772_37fb8f4d.webp" alt="Scale">
+          </div>
+          <div class="journey-content">
+            <h3>Global Expansion</h3>
+            <p>By bringing video podcasts and interactive community features into a single ecosystem, we saw unprecedented growth. We connected millions of listeners to creators across 150 countries, bridging the gap between audio and visual media.</p>
+          </div>
+        </div>
+
+        <div class="journey-card fade-up-element">
+          <div class="journey-image">
+            <div class="journey-year">2024</div>
+            <img src="images/unsplash_158990330890_4dc0908d.webp" alt="Future">
+          </div>
+          <div class="journey-content">
+            <h3>The Next Frontier</h3>
+            <p>Today, PodStream isn't just a player; it's a universe. With immersive 4K video, AI-driven discovery, and spatial audio integrations, we are shaping the future of how the world listens and watches.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 3 – INSIDE PODSTREAM
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="inside-section">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Inside <span>PodStream</span></h2>
+      <p class="section-subtitle fade-up-element" style="transition-delay: 0.1s;">Peek behind the curtain of our platform's thriving ecosystem.</p>
+      <div class="inside-grid">
+        <div class="inside-left fade-left-element">
+          <img src="images/unsplash_151632149748_ad5da2cf.webp" alt="Studio">
+          <div class="inside-left-overlay">
+            <h3 class="inside-left-title">Empowering<br>Every Voice.</h3>
+          </div>
+        </div>
+        <div class="inside-right fade-right-element">
+          <div class="expand-card">
+            <h4>Our Story <i class="material-icons">arrow_forward</i></h4>
+            <div class="expand-desc">A relentless pursuit to democratize digital media, turning everyday stories into global phenomenons.</div>
+          </div>
+          <div class="expand-card">
+            <h4>Innovation <i class="material-icons">arrow_forward</i></h4>
+            <div class="expand-desc">Pioneering 4K video podcasting, real-time translations, and spatial audio to create unparalleled immersion.</div>
+          </div>
+          <div class="expand-card">
+            <h4>Community <i class="material-icons">arrow_forward</i></h4>
+            <div class="expand-desc">Building bridges between creators and listeners with interactive live streams and exclusive fan ecosystems.</div>
+          </div>
+          <div class="expand-card">
+            <h4>Future Vision <i class="material-icons">arrow_forward</i></h4>
+            <div class="expand-desc">Expanding into virtual reality podcasts, making the listening experience physical and boundaryless.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 4 – PODCAST UNIVERSE
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="universe-section">
+    <div class="container">
+      <h2 class="section-title zoom-in-element">The Podcast <span>Universe</span></h2>
+      <p class="section-subtitle zoom-in-element" style="transition-delay: 0.1s;">A massive network connecting creators and millions of listeners worldwide.</p>
+      <div class="universe-network zoom-in-element">
+        
+        <div class="universe-center">PodStream</div>
+        
+        <div class="orbit-ring ring-1">
+          <div class="node node-1"><strong class="counter" data-target="150" data-suffix="K+">0</strong><span>Creators</span></div>
+          <div class="node node-2"><strong class="counter" data-target="50" data-suffix="M+">0</strong><span>Listeners</span></div>
+        </div>
+
+        <div class="orbit-ring ring-2">
+          <div class="node node-3"><strong class="counter" data-target="2" data-suffix="B+">0</strong><span>Episodes</span></div>
+          <div class="node node-4"><strong class="counter" data-target="40" data-suffix="%">0</strong><span>Video Casts</span></div>
+          <div class="node node-5"><strong class="counter" data-target="150" data-suffix="">0</strong><span>Countries</span></div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 5 – CREATOR SHOWCASE (BENTO)
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="bento-section">
+    <div class="container">
+      <h2 class="section-title fade-up-element">Creator <span>Showcase</span></h2>
+      <p class="section-subtitle fade-up-element" style="transition-delay: 0.1s;">Meet some of the top voices shaping the future of our platform.</p>
+      <div class="bento-grid">
+        
+        <!-- Large Block -->
+        <div class="bento-card bento-large fade-up-element">
+          <img src="images/unsplash_159848803513_652d7fd5.webp" alt="Creator">
+          <a href="404.html" class="bento-play"><i class="material-icons">play_arrow</i></a>
+          <div class="bento-info">
+            <div class="bento-name">The Lex Fridman Podcast</div>
+            <div class="bento-stats"><span>3.2M Followers</span> • <span>248 Episodes</span></div>
+          </div>
+        </div>
+
+        <!-- Tall Block -->
+        <div class="bento-card bento-tall fade-up-element" style="transition-delay: 0.1s;">
+          <img src="images/unsplash_150679477820_f6fc88d5.webp" alt="Creator">
+          <a href="404.html" class="bento-play"><i class="material-icons">play_arrow</i></a>
+          <div class="bento-info">
+            <div class="bento-name">Design Details</div>
+            <div class="bento-stats"><span>1.2M Flws</span></div>
+          </div>
+        </div>
+
+        <!-- Standard Block -->
+        <div class="bento-card fade-up-element" style="transition-delay: 0.2s;">
+          <img src="images/unsplash_151632149748_ad5da2cf.webp" alt="Creator">
+          <a href="404.html" class="bento-play"><i class="material-icons">play_arrow</i></a>
+          <div class="bento-info">
+            <div class="bento-name">Tech News</div>
+            <div class="bento-stats"><span>800K Flws</span></div>
+          </div>
+        </div>
+
+        <!-- Standard Block -->
+        <div class="bento-card fade-up-element" style="transition-delay: 0.3s;">
+          <img src="images/unsplash_158990330890_4dc0908d.webp" alt="Creator">
+          <a href="404.html" class="bento-play"><i class="material-icons">play_arrow</i></a>
+          <div class="bento-info">
+            <div class="bento-name">True Crime</div>
+            <div class="bento-stats"><span>2.5M Flws</span></div>
+          </div>
+        </div>
+
+        <!-- Removed Wide Block per user request -->
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SECTION 6 – WHY PODSTREAM & CTA
+  ═══════════════════════════════════════════════════════════════ -->
+  <section class="why-section">
+    <div class="why-center-glow"></div>
+    <div class="container">
+      <h2 class="section-title fade-up-element">Why <span>PodStream</span></h2>
+      
+      <div class="features-orbit-grid">
+        <div class="feature-orbit-card fade-up-element">
+          <div class="f-icon"><i class="material-icons">high_quality</i></div>
+          <h4>Crystal Audio</h4>
+          <p>Lossless streaming quality that makes you feel like you are in the room.</p>
+        </div>
+        <div class="feature-orbit-card fade-up-element" style="transition-delay: 0.1s;">
+          <div class="f-icon"><i class="material-icons">videocam</i></div>
+          <h4>Video Podcasts</h4>
+          <p>Immersive 4K video support with seamless audio-only switching.</p>
+        </div>
+        <div class="feature-orbit-card fade-up-element" style="transition-delay: 0.2s;">
+          <div class="f-icon"><i class="material-icons">offline_pin</i></div>
+          <h4>Offline Listening</h4>
+          <p>Download your favorite series instantly and listen anywhere.</p>
+        </div>
+        <div class="feature-orbit-card fade-up-element">
+          <div class="f-icon"><i class="material-icons">psychology</i></div>
+          <h4>AI Recommendations</h4>
+          <p>Our smart engine finds the stories you didn't know you needed.</p>
+        </div>
+        <div class="feature-orbit-card fade-up-element" style="transition-delay: 0.1s;">
+          <div class="f-icon"><i class="material-icons">devices</i></div>
+          <h4>Cross Platform</h4>
+          <p>Seamlessly resume playback across your phone, desktop, and car.</p>
+        </div>
+        <div class="feature-orbit-card fade-up-element" style="transition-delay: 0.2s;">
+          <div class="f-icon"><i class="material-icons">travel_explore</i></div>
+          <h4>Smart Discovery</h4>
+          <p>Interactive transcripts and timeline highlights to skip to the best parts.</p>
+        </div>
+      </div>
+
+      <div class="premium-cta zoom-in-element">
+        <div class="cta-particles"></div>
+        <div class="cta-content">
+          <h2 class="cta-title">Ready to Experience the Future of Podcasts?</h2>
+          <div class="cta-buttons">
+            <a href="404.html" class="btn btn-primary btn-lg btn-magnetic"><span style="position:relative; z-index:2;">Start Listening</span></a>
+            <a href="404.html" class="btn btn-outline btn-lg btn-magnetic"><span style="position:relative; z-index:2;">Become a Creator</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       FOOTER
+  ═══════════════════════════════════════════════════════════════ -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="fade-up-element">
+          <a href="index.html" class="footer-logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
+          <p class="footer-text">The premium destination for audio and video podcasts. Experience crystal clear streaming and discover your next favorite creator.</p>
+          <div class="social-links">
+            <a href="404.html"><i class="material-icons">podcasts</i></a>
+            <a href="404.html"><i class="material-icons">mic</i></a>
+            <a href="404.html"><i class="material-icons">headphones</i></a>
+            <a href="404.html"><i class="material-icons">rss_feed</i></a>
+          </div>
+        </div>
+        <div>
+          <h4>Quick Links</h4>
+          <ul class="footer-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="podcasts.html">Podcasts</a></li>
+            <li><a href="video-podcasts.html">Video Podcasts</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="discover.html">Discover</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Support</h4>
+          <ul class="footer-links">
+            <li><a href="404.html">Contact Us</a></li>
+            <li><a href="404.html">Help Center</a></li>
+            <li><a href="404.html">Privacy Policy</a></li>
+            <li><a href="404.html">Terms &amp; Conditions</a></li>
+          </ul>
+        </div>
+        <div>
+          <h4>Newsletter</h4>
+          <p class="footer-text">Get weekly recommendations.</p>
+          <form class="newsletter-form" action="404.html" method="GET">
+            <input type="email" name="email" placeholder="Email" required>
+            <button type="submit" class="btn btn-primary" style="padding: 10px 15px;"><i class="material-icons">send</i></button>
+          </form>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Stackly. All rights reserved. Designed for Premium Listening.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ═══════════════════════════════════════════════════════════
+       SCRIPTS
+  ═══════════════════════════════════════════════════════════════ -->
+  <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/gsap.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.2/ScrollTrigger.min.js"></script>
+  <script src="js/script.js"></script>
+  <script>
+    /* ─────────────────────────────────────────────────────────────
+       GSAP Hero Animations
+    ───────────────────────────────────────────────────────────── */
+    gsap.registerPlugin(ScrollTrigger);
+
+    const heroTl = gsap.timeline({ delay: 0.3 });
+
+    // Badge
+    heroTl.from('.pods-badge--new', {
+      opacity: 0, y: -20, duration: 0.5, ease: 'back.out(1.7)'
+    });
+    
+    // Additional GSAP could be added here for other elements if needed
+
+    /* ─────────────────────────────────────────────────────────────
+       Intersection Observer – Scroll Animations
+    ───────────────────────────────────────────────────────────── */
+    const animatedEls = document.querySelectorAll(
+      '.fade-up-element, .fade-down-element, .fade-left-element, .fade-right-element, ' +
+      '.zoom-in-element, .zoom-out-element, .flip-left-element, .flip-right-element'
+    );
+
+    const observerOptions = { threshold: 0.12, rootMargin: '0px 0px -40px 0px' };
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('is-visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, observerOptions);
+
+    animatedEls.forEach(el => observer.observe(el));
+
+    /* ─────────────────────────────────────────────────────────────
+       Counter Animation (triggered by IO)
+    ───────────────────────────────────────────────────────────── */
+    const counters = document.querySelectorAll('.counter');
+
+    const counterObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target;
+        const target = parseFloat(el.dataset.target);
+        const suffix = el.dataset.suffix || '';
+        const duration = 2000;
+        const stepTime = 20;
+        const steps = duration / stepTime;
+        const increment = target / steps;
+        let current = 0;
+
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          el.textContent = (Number.isInteger(target)
+            ? Math.round(current)
+            : current.toFixed(1)) + suffix;
+        }, stepTime);
+
+        counterObserver.unobserve(el);
+      });
+    }, { threshold: 0.5 });
+
+    counters.forEach(c => counterObserver.observe(c));
+
+    /* ─────────────────────────────────────────────────────────────
+       Hamburger menu (fallback if not in script.js)
+    ───────────────────────────────────────────────────────────── */
+    const hamburger = document.querySelector('.hamburger');
+    const navLinks  = document.querySelector('.nav-links');
+    if (hamburger && navLinks) {
+      hamburger.addEventListener('click', () => navLinks.classList.toggle('open'));
+    }
+  </script>
+</body>
+</html>
