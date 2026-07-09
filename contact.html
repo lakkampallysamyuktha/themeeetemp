@@ -1,266 +1,719 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contact - PodStream</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Material Icons -->
-    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
-    <!-- Swiper CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard – PodStream</title>
+  <meta name="description" content="Your personal PodStream dashboard. Track listening activity, manage playlists, and discover new podcasts.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    :root {
+      --primary: #A85BD8;
+      --primary-rgb: 168, 91, 216;
+      --bg: #1F2430;
+      --bg-rgb: 31, 36, 48;
+      --text: #FFFFFF;
+      --glass-bg: rgba(31,36,48,0.75);
+      --glass-border: rgba(168,91,216,0.2);
+      --glass-shadow: 0 8px 32px rgba(0,0,0,0.37);
+      --sidebar-w: 260px;
+      --topbar-h: 68px;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display: flex;
+      overflow-x: hidden;
+    }
+    a { color: inherit; text-decoration: none; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(var(--primary-rgb),0.3); border-radius: 10px; }
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="css/style.css">
-    <style>
-        body {
-            padding-bottom: 0 !important;
-        }
-        .contact-form {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-        .contact-form input, .contact-form textarea {
-            width: 100%;
-            padding: 15px;
-            border-radius: 10px;
-            border: 1px solid var(--glass-border);
-            background: rgba(255,255,255,0.05);
-            color: var(--text-color);
-            font-family: var(--font-main);
-            outline: none;
-            transition: var(--transition);
-        }
-        .contact-form input:focus, .contact-form textarea:focus {
-            border-color: var(--primary-color);
-        }
-        .contact-form textarea {
-            resize: none;
-            height: 150px;
-        }
-        .faq-item {
-            background: var(--glass-bg);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            margin-bottom: 15px;
-            padding: 20px;
-            cursor: pointer;
-        }
-        .faq-item h4 {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            color: var(--primary-color);
-        }
-        .faq-item p {
-            margin-top: 15px;
-            color: rgba(255,255,255,0.7);
-            display: none;
-        }
-    </style>
+    /* ─── SIDEBAR & OVERLAY ─── */
+    .sidebar-overlay {
+      display: none; position: fixed; inset: 0; z-index: 190;
+      background: rgba(0,0,0,0.5); backdrop-filter: blur(4px);
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .sidebar {
+      width: var(--sidebar-w);
+      height: 100vh;
+      position: fixed;
+      top: 0; left: 0;
+      z-index: 200;
+      background: rgba(var(--bg-rgb),0.97);
+      border-right: 1px solid rgba(var(--primary-rgb),0.12);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.3s ease, width 0.3s ease;
+      overflow: hidden;
+    }
+    .sidebar-logo { display: flex; align-items: center; gap: 10px; padding: 10px 20px; border-bottom: 1px solid rgba(255,255,255,0.05); flex-shrink: 0; text-decoration: none; color: var(--text); }
+    .static-logo {
+      width: 140px; height: 140px; object-fit: contain; border-radius: 8px;
+      margin-top: -30px; margin-bottom: -30px;
+      filter: brightness(0) invert(1);
+    }
+    .close-sidebar-btn {
+      display: none; background: rgba(255,255,255,0.05); border: none;
+      color: white; padding: 6px; border-radius: 8px; cursor: pointer;
+      margin-left: auto; transition: background 0.2s;
+    }
+    .close-sidebar-btn:hover { background: rgba(255,255,255,0.1); }
+    .sidebar-logo .logo-text {
+      font-size: 1.25rem; font-weight: 800;
+      background: linear-gradient(135deg, #fff, var(--primary));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      white-space: nowrap;
+    }
+    .viewer-badge { background: rgba(var(--primary-rgb),0.25); color: var(--primary); font-size: 0.6rem; font-weight: 700; letter-spacing: 1.2px; padding: 3px 9px; border-radius: 50px; text-transform: uppercase; white-space: nowrap; border: 1px solid rgba(var(--primary-rgb),0.3); }
+    .sidebar-nav { flex: 1; padding: 12px 0; overflow-y: auto; overflow-x: hidden; }
+    .nav-section-label {
+      display: block;
+      padding: 10px 22px 4px;
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.25);
+      white-space: nowrap;
+    }
+    .nav-link {
+      display: flex; align-items: center; gap: 13px;
+      padding: 12px 18px; margin: 2px 10px;
+      border-radius: 12px; cursor: pointer;
+      font-size: 0.9rem; font-weight: 500;
+      color: rgba(255,255,255,0.55);
+      transition: all 0.2s ease; white-space: nowrap;
+      border-left: 3px solid transparent; text-decoration: none;
+    }
+    .nav-link:hover {
+      background: rgba(var(--primary-rgb),0.1);
+      color: rgba(255,255,255,0.9); border-left-color: rgba(var(--primary-rgb),0.4);
+    }
+    .nav-link.active {
+      background: rgba(var(--primary-rgb),0.15);
+      color: var(--primary); border-left-color: var(--primary);
+    }
+    .nav-link .material-icons { font-size: 21px; flex-shrink: 0; }
+    .nav-divider { height: 1px; background: rgba(255,255,255,0.06); margin: 10px 22px; }
+    .nav-link.logout { color: rgba(255,100,100,0.7); }
+    .nav-link.logout:hover { background: rgba(255,80,80,0.08); color: #ff7070; border-left-color: rgba(255,80,80,0.4); }
+    .sidebar-footer {
+      padding: 16px 18px; border-top: 1px solid rgba(255,255,255,0.06);
+      display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+    }
+    .user-ava {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #7a2cbf);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700; flex-shrink: 0;
+    }
+    .user-info { overflow: hidden; }
+    .user-info .uname { font-size: 0.85rem; font-weight: 600; white-space: nowrap; }
+    .user-info .uemail { font-size: 0.72rem; color: rgba(255,255,255,0.4); white-space: nowrap; }
+
+    /* ─── MAIN ─── */
+    .main-wrap { margin-left: var(--sidebar-w); flex: 1; min-height: 100vh; display: flex; flex-direction: column; transition: margin-left 0.3s ease; }
+
+    /* ─── TOPBAR ─── */
+    .topbar {
+      position: sticky; top: 0; z-index: 100; height: var(--topbar-h);
+      background: rgba(var(--bg-rgb),0.92); backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(var(--primary-rgb),0.1);
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 28px; flex-shrink: 0;
+    }
+    .topbar-left { display: flex; align-items: center; gap: 14px; }
+    .menu-toggle {
+      display: none; background: none; border: none; color: var(--text); cursor: pointer;
+      padding: 5px; border-radius: 8px; margin-left: -8px;
+    }
+    .mobile-logo { display: none; align-items: center; gap: 8px; font-size: 1.1rem; font-weight: 800; }
+    .mobile-logo .static-logo { width: 90px; height: 90px; margin-top: -20px; margin-bottom: -20px; }
+    .topbar-title { font-size: 1.2rem; font-weight: 700; color: rgba(255,255,255,0.9); }
+    .topbar-right { display: flex; align-items: center; gap: 14px; }
+    .search-box {
+      display: flex; align-items: center; gap: 9px;
+      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 50px; padding: 9px 16px; transition: border-color 0.2s;
+    }
+    .search-box:focus-within { border-color: var(--primary); }
+    .search-box .material-icons { font-size: 18px; color: rgba(255,255,255,0.35); }
+    .search-box input { background: none; border: none; outline: none; color: var(--text); font-family: inherit; font-size: 0.85rem; width: 170px; }
+    .notif-btn {
+      position: relative; background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08); border-radius: 50%;
+      width: 40px; height: 40px; display: flex; align-items: center; justify-content: center;
+      cursor: default; color: rgba(255,255,255,0.6);
+    }
+    .notif-dot { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: #ff4d6a; border: 2px solid var(--bg); }
+    .topbar-ava {
+      width: 38px; height: 38px; border-radius: 50%;
+      background: linear-gradient(135deg, var(--primary), #7a2cbf);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.82rem; font-weight: 700; cursor: default;
+    }
+
+    /* ─── SPA SECTIONS ─── */
+    .page-body { padding: 28px 28px 48px; flex: 1; }
+    .spa-section { display: none; animation: fadeIn 0.4s ease forwards; }
+    .spa-section.active { display: block; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    /* ─── COMPONENT CLASSES ─── */
+    .sec-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+    .sec-head h2 { font-size: 1.2rem; font-weight: 700; }
+    .btn-primary { background: var(--primary); color: #fff; padding: 10px 20px; border-radius: 50px; font-weight: 600; border: none; cursor: pointer; transition: all 0.2s; }
+    .btn-primary:hover { background: #b96de0; box-shadow: 0 4px 15px rgba(var(--primary-rgb),0.4); }
+    .glass-panel {
+      background: var(--glass-bg); border: 1px solid var(--glass-border);
+      border-radius: 16px; padding: 25px; box-shadow: var(--glass-shadow);
+      margin-bottom: 30px;
+    }
+    
+    .data-table { width: 100%; border-collapse: collapse; }
+    .data-table th {
+      text-align: left; padding: 12px 15px; color: rgba(255,255,255,0.6);
+      font-weight: 600; font-size: 0.85rem; border-bottom: 1px solid rgba(255,255,255,0.1);
+    }.data-table td { padding: 16px 12px; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 0.85rem; }
+    .status-badge { padding: 4px 10px; border-radius: 50px; font-size: 0.7rem; font-weight: 600; }
+    .status-badge.published { background: rgba(52,211,153,0.15); color: #34d399; }
+    .status-badge.draft { background: rgba(255,255,255,0.1); color: #ddd; }
+    
+    /* ─── CONTENT GRIDS ─── */
+    .content-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+    .content-card {
+      background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.05);
+      border-radius: 14px; padding: 14px; cursor: default; transition: transform 0.2s, background 0.2s;
+    }
+    .content-card:hover { transform: translateY(-4px); background: rgba(255,255,255,0.06); }
+    .c-img { width: 100%; aspect-ratio: 1; border-radius: 10px; object-fit: cover; margin-bottom: 12px; }
+    .c-img-video { aspect-ratio: 16/9; }
+    .c-title { font-size: 0.95rem; font-weight: 600; margin-bottom: 4px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .c-sub { font-size: 0.8rem; color: rgba(255,255,255,0.4); }
+    
+    .playlist-card {
+      display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px;
+    }
+    .playlist-card .material-icons { font-size: 40px; margin-bottom: 10px; }
+    
+    /* ─── SETTINGS FORM ─── */
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 0.85rem; margin-bottom: 8px; color: rgba(255,255,255,0.8); }
+    .form-control { width: 100%; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 12px 16px; color: white; font-family: inherit; }
+    .form-control:focus { outline: none; border-color: var(--primary); }
+    
+    /* ─── DISCOVER TAGS ─── */
+    .tags-row { display: flex; gap: 12px; overflow-x: auto; padding-bottom: 10px; margin-bottom: 20px; }
+    .tag-pill { background: rgba(255,255,255,0.08); padding: 8px 16px; border-radius: 50px; font-size: 0.8rem; cursor: default; white-space: nowrap; }
+    .tag-pill:hover, .tag-pill.active { background: var(--primary); color: white; }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 1024px) {
+      .content-grid { grid-template-columns: repeat(3, 1fr); }
+    }
+    @media (max-width: 768px) {
+      /* Hamburger overrides */
+      .sidebar { transform: translateX(-100%); border-right: none; height: 100%; bottom: 0; }
+      .sidebar.open { transform: translateX(0); box-shadow: 4px 0 24px rgba(0,0,0,0.5); }
+      .sidebar-overlay.open { display: block; opacity: 1; }
+      .sidebar-logo { padding: 10px 12px; gap: 8px; }
+      .sidebar-logo .static-logo { width: 120px; }
+      .close-sidebar-btn { display: block; }
+      .menu-toggle { display: block; }
+      .main-wrap { margin-left: 0; width: 100%; max-width: 100vw; min-width: 0; }
+      .mobile-logo { display: flex !important; }
+      .topbar-title { display: none; }
+      .topbar { padding: 0 16px; }
+      .page-body { padding: 20px 16px; overflow-x: hidden; width: 100%; min-width: 0; }
+      .search-box input { width: 120px; }
+      .content-grid { grid-template-columns: repeat(2, 1fr); }
+      .sec-head { flex-wrap: wrap; gap: 8px; }
+      .sec-head h2 { font-size: 0.95rem; }
+      .btn-primary { padding: 5px 10px; font-size: 0.7rem; }
+      .glass-panel { padding: 15px; width: 100%; }
+      .glass-panel[style*="display: flex"] { flex-direction: column !important; text-align: center; gap: 15px; }
+      
+      .playlist-card { padding: 20px; }
+      .playlist-card .material-icons { font-size: 30px; margin-bottom: 5px; }
+      
+      /* Responsive Data Table Cards (Mobile Only) */
+      .data-table, .data-table tbody, .data-table tr { display: block; width: 100%; }
+      .data-table thead { display: none; }
+      .data-table tr { 
+        margin-bottom: 15px; background: rgba(255,255,255,0.03); 
+        border-radius: 12px; padding: 15px; 
+        display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px;
+        border: 1px solid rgba(255,255,255,0.05);
+      }
+      .data-table td { border: none; padding: 0; display: flex; align-items: center; justify-content: flex-start; }
+      
+      .data-table td:nth-child(1) { width: 45px; } /* Artwork */
+      .data-table td:nth-child(2) { flex: 1; font-weight: 600; font-size: 0.95rem; } /* Title */
+      .data-table td:nth-child(3) { width: 45%; } /* Status */
+      .data-table td:nth-child(4) { width: 45%; color: rgba(255,255,255,0.6); font-size: 0.85rem; text-align: right; justify-content: flex-end; } /* Listens */
+      .data-table td:nth-child(5) { width: 100%; border-top: 1px solid rgba(255,255,255,0.05); padding-top: 10px; margin-top: 5px; justify-content: flex-end; } /* Actions */
+      
+      div[style*="display: grid; grid-template-columns: 1fr 1fr"] { grid-template-columns: 1fr !important; }
+      .tags-row { flex-wrap: wrap; overflow-x: visible; justify-content: center; }
+    }
+    @media (max-width: 480px) {
+      .content-grid { grid-template-columns: 1fr; }
+      .search-box { display: none; }
+    }
+  </style>
 </head>
 <body>
 
-    <!-- HEADER -->
-    <header class="header glass">
-        <nav class="nav-container">
-            <a href="index.html" class="logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
-            <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="podcasts.html">Podcasts</a></li>
-                <li><a href="video-podcasts.html">Video Podcasts</a></li>
-                <li><a href="about.html">About</a></li>
-                <li><a href="discover.html">Discover</a></li>
-            </ul>
-            <div class="nav-actions">
-                <a href="404.html" style="color:inherit;"><i class="material-icons">search</i></a>
-                <a href="404.html" style="color:inherit;"><i class="material-icons">notifications</i></a>
-                <a href="404.html"><img src="Images/woman_44_11c69897.webp" alt="User" class="user-profile" loading="lazy"></a>
-                <a href="login.html" class="btn btn-primary">Login</a>
-            </div>
-            <i class="material-icons hamburger">menu</i>
-        </nav>
+  <!-- MOBILE OVERLAY -->
+  <div class="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+  <!-- ═══════════════ SIDEBAR ═══════════════ -->
+  <aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream">
+      <span class="viewer-badge">VIEWER</span>
+      <button class="close-sidebar-btn" onclick="toggleSidebar()"><span class="material-icons">close</span></button>
+    </div>
+
+    <nav class="sidebar-nav">
+      <span class="nav-section-label">MENU</span>
+      <a class="nav-link active" onclick="showSection('dashboard', 'Dashboard', this)">
+        <span class="material-icons">dashboard</span><span class="nl">Dashboard</span>
+      </a>
+      <a class="nav-link" onclick="showSection('podcasts', 'My Podcasts', this)">
+        <span class="material-icons">podcasts</span><span class="nl">My Podcasts</span>
+      </a>
+      <a class="nav-link" onclick="showSection('favorites', 'Favourites', this)">
+        <span class="material-icons">favorite</span><span class="nl">Favourites</span>
+      </a>
+      <a class="nav-link" onclick="showSection('playlists', 'Playlists', this)">
+        <span class="material-icons">playlist_play</span><span class="nl">Playlists</span>
+      </a>
+      <a class="nav-link" onclick="showSection('videos', 'Videos', this)">
+        <span class="material-icons">play_circle</span><span class="nl">Videos</span>
+      </a>
+      <a class="nav-link" onclick="showSection('discover', 'Discover', this)">
+        <span class="material-icons">explore</span><span class="nl">Discover</span>
+      </a>
+
+      <div class="nav-divider"></div>
+      <span class="nav-section-label">ACCOUNT</span>
+
+      <a class="nav-link" onclick="showSection('subscription', 'Subscription', this)">
+        <span class="material-icons">credit_card</span><span class="nl">Subscription</span>
+      </a>
+      <a class="nav-link" onclick="showSection('settings', 'Settings', this)">
+        <span class="material-icons">settings</span><span class="nl">Settings</span>
+      </a>
+      <a href="index.html" class="nav-link logout">
+        <span class="material-icons">logout</span><span class="nl">Logout</span>
+      </a>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="user-ava">JD</div>
+      <div class="user-info">
+        <div class="uname">John Doe</div>
+        <div class="uemail">john@podstream.com</div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ═══════════════ MAIN ═══════════════ -->
+  <div class="main-wrap">
+
+    <header class="topbar">
+      <div class="topbar-left">
+        <button class="menu-toggle" onclick="toggleSidebar()"><span class="material-icons">menu</span></button>
+        <a href="404.html" class="mobile-logo">
+          <img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream">
+        </a>
+        <span class="topbar-title" id="topbar-title-text">Dashboard</span>
+      </div>
+      <div class="topbar-right">
+        <div class="search-box">
+          <span class="material-icons">search</span>
+          <input type="text" placeholder="Search podcasts...">
+        </div>
+        <button class="notif-btn" aria-label="Notifications" onclick="window.location.href='404.html'">
+          <span class="material-icons">notifications</span><span class="notif-dot"></span>
+        </button>
+        <a href="404.html" class="topbar-ava" title="Profile">JD</a>
+      </div>
     </header>
 
-    <!-- SECTION 1: Hero Banner -->
-    <section class="subpage-hero" style="background: url('https://loremflickr.com/1920/600/podcast,studio/all?random=80') center/cover no-repeat; position: relative; color: #fff;">
-        <div style="position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(31, 36, 48, 0.8);"></div>
-        <div class="container" style="position: relative; z-index: 1;">
-            <h1 style="color: #fff;">Get in Touch</h1>
-            <p style="color: rgba(255,255,255,0.9);">Have questions, feedback, or want to partner with us? We'd love to hear from you. Our team is available 24/7.</p>
+    <main class="page-body">
+
+      <!-- ================= DASHBOARD ================= -->
+      <section id="sec-dashboard" class="spa-section active">
+        <div class="glass-panel" style="background: linear-gradient(135deg, rgba(168,91,216,0.18), rgba(31,36,48,0.7)); display: flex; justify-content: space-between; align-items: center;">
+          <div>
+            <h2>Good Evening, <span id="dashboard-username">John</span>! <button onclick="window.location.href='404.html'" style="background:none; border:none; font-size:inherit; cursor:pointer; padding:0; margin:0; transition: transform 0.2s;" onmouseover="this.style.transform='scale(1.2)'" onmouseout="this.style.transform='scale(1)'">👋</button></h2>
+            <p style="color:rgba(255,255,255,0.6); margin-top:5px;">You've listened for 12 hours this week. You're in the top 10% of listeners.</p>
+          </div>
+          <button class="btn-primary" style="padding: 10px 20px;" onclick="window.location.href='404.html'">View Full Stats</button>
         </div>
-    </section>
-
-    <!-- SECTION 2: Contact Form -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="grid-2">
-                <div>
-                    <h2 style="font-size: 2.5rem; margin-bottom: 20px; color: var(--primary-color);">Send us a Message</h2>
-                    <p style="margin-bottom: 30px; color: rgba(255,255,255,0.7);">Whether you're a listener encountering a bug or a creator looking to join the platform, send us a message and we'll respond within 24 hours.</p>
-                    <form class="contact-form" action="404.html" method="GET">
-                        <input type="text" placeholder="Full Name" required>
-                        <input type="email" placeholder="Email Address" required>
-                        <input type="text" placeholder="Subject" required>
-                        <textarea placeholder="Your Message..." required></textarea>
-                        <button type="submit" class="btn btn-primary" style="width: 200px;">Send Message</button>
-                    </form>
-                </div>
-                <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
-                    <img src="https://loremflickr.com/600/600/podcast,microphone/all?random=81" alt="Contact Us" style="border-radius: 20px; width: 80%; max-width: 400px;" loading="lazy">
-                </div>
+        
+        <div class="sec-head"><h2>Continue Listening</h2></div>
+        <div class="content-grid" style="margin-bottom: 30px;">
+          <div class="content-card" style="position: relative;">
+            <img src="Images/unsplash_147873727023_58aebaff.webp" class="c-img" alt="Podcast">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">The Daily Digest</div>
+            <div class="c-sub">Episode 142 • 18 min left</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden;">
+              <div style="width: 65%; background: var(--primary); height: 100%;"></div>
             </div>
+          </div>
+          <div class="content-card" style="position: relative;">
+            <img src="Images/unsplash_159060284786_2fc2e320.webp" class="c-img" alt="Podcast">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Tech Unboxed</div>
+            <div class="c-sub">Episode 42 • 5 min left</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden;">
+              <div style="width: 85%; background: var(--primary); height: 100%;"></div>
+            </div>
+          </div>
+          <div class="content-card" style="position: relative;">
+            <img src="Images/unsplash_158990330890_0d3269b1.webp" class="c-img" alt="Podcast">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Mind & Body</div>
+            <div class="c-sub">Episode 4 • 22 min left</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden;">
+              <div style="width: 30%; background: var(--primary); height: 100%;"></div>
+            </div>
+          </div>
+          <div class="content-card" style="position: relative;">
+            <img src="Images/unsplash_150700321116_c5a60f0e.webp" class="c-img" alt="Podcast">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Startup Hustle</div>
+            <div class="c-sub">Episode 12 • 45 min left</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden;">
+              <div style="width: 10%; background: var(--primary); height: 100%;"></div>
+            </div>
+          </div>
+          <div class="content-card" style="position: relative;">
+            <img src="Images/unsplash_151167178277_d5c342fd.webp" class="c-img" alt="Podcast">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:35%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Creative Thinking</div>
+            <div class="c-sub">Episode 8 • 5 min left</div>
+            <div style="width: 100%; background: rgba(255,255,255,0.1); height: 4px; border-radius: 2px; margin-top: 10px; overflow: hidden;">
+              <div style="width: 90%; background: var(--primary); height: 100%;"></div>
+            </div>
+          </div>
         </div>
-    </section>
 
-    <!-- SECTION 3: Frequently Asked Questions -->
-    <section class="section-padding" style="background: rgba(31, 36, 48, 0.5);">
-        <div class="container">
-            <h2 class="section-title">Frequently Asked Questions</h2>
-            <div style="max-width: 800px; margin: 0 auto;">
-                <div class="faq-item" onclick="this.querySelector('p').style.display = this.querySelector('p').style.display === 'block' ? 'none' : 'block';">
-                    <h4>How do I upload my podcast to PodStream? <i class="material-icons">expand_more</i></h4>
-                    <p>Simply create a creator account, navigate to your dashboard, and click 'Add RSS Feed' or 'Upload Manually'. We support standard RSS imports.</p>
-                </div>
-                <div class="faq-item" onclick="this.querySelector('p').style.display = this.querySelector('p').style.display === 'block' ? 'none' : 'block';">
-                    <h4>Is the premium membership available globally? <i class="material-icons">expand_more</i></h4>
-                    <p>Yes! Our premium membership is available in over 150 countries. Pricing may vary slightly depending on your region's local currency.</p>
-                </div>
-                <div class="faq-item" onclick="this.querySelector('p').style.display = this.querySelector('p').style.display === 'block' ? 'none' : 'block';">
-                    <h4>Can I download videos for offline viewing? <i class="material-icons">expand_more</i></h4>
-                    <p>Yes, premium members can download both audio and video episodes directly to their mobile devices via the PodStream app.</p>
-                </div>
-                <div class="faq-item" onclick="this.querySelector('p').style.display = this.querySelector('p').style.display === 'block' ? 'none' : 'block';">
-                    <h4>How do I cancel my subscription? <i class="material-icons">expand_more</i></h4>
-                    <p>You can cancel your subscription at any time by going to Profile > Billing > Manage Subscription. Your premium features will remain active until the billing cycle ends.</p>
-                </div>
-            </div>
+        <div class="sec-head"><h2>Recent Activity</h2></div>
+        <div class="content-grid">
+          <div class="content-card">
+            <img src="Images/unsplash_147873727023_58aebaff.webp" class="c-img" alt="Podcast">
+            <div class="c-title">The Daily Digest</div>
+            <div class="c-sub">Episode 142 • 18 min left</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_159060284786_2fc2e320.webp" class="c-img" alt="Podcast">
+            <div class="c-title">Tech Unboxed</div>
+            <div class="c-sub">New Episode Available</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_158990330890_0d3269b1.webp" class="c-img" alt="Podcast">
+            <div class="c-title">Mind & Body</div>
+            <div class="c-sub">Episode 4 • Completed</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_150700321116_c5a60f0e.webp" class="c-img" alt="Podcast">
+            <div class="c-title">Startup Hustle</div>
+            <div class="c-sub">Completed</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_151167178277_d5c342fd.webp" class="c-img" alt="Podcast">
+            <div class="c-title">Creative Thinking</div>
+            <div class="c-sub">New Episode Available</div>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <!-- SECTION 4: Office Location -->
-    <section class="section-padding">
-        <div class="container">
-            <h2 class="section-title">Our Office</h2>
-            <div class="glass" style="padding: 20px; border-radius: 20px; overflow: hidden; height: 400px; position: relative;">
-                <!-- Placeholder map using an image -->
-                <img src="https://loremflickr.com/1200/600/map,city/all?random=82" alt="Map" style="width: 100%; height: 100%; object-fit: cover; opacity: 0.5;" loading="lazy">
-                <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); background: rgba(31,36,48,0.9); padding: 30px; border-radius: 15px; border: 1px solid var(--primary-color); text-align: center;">
-                    <i class="material-icons" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 10px;">location_on</i>
-                    <h3 style="margin-bottom: 10px;">PodStream Headquarters</h3>
-                    <p style="color: rgba(255,255,255,0.7);">123 Audio Lane, Tech District<br>San Francisco, CA 94105</p>
-                </div>
-            </div>
+      <!-- ================= MY PODCASTS ================= -->
+      <section id="sec-podcasts" class="spa-section">
+        <div class="sec-head">
+          <h2>My Uploaded Podcasts</h2>
+          <button class="btn-primary" onclick="window.location.href='404.html'">+ Upload New</button>
         </div>
-    </section>
-
-    <!-- SECTION 5: Customer Support -->
-    <section class="section-padding" style="background: rgba(31, 36, 48, 0.5);">
-        <div class="container">
-            <h2 class="section-title">Customer Support</h2>
-            <div class="grid-3">
-                <div class="glass" style="padding: 40px; text-align: center; border-radius: 20px;">
-                    <i class="material-icons" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;">email</i>
-                    <h3 style="margin-bottom: 10px;">Email Us</h3>
-                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">support@podstream.com</p>
-                    <a href="404.html" class="btn btn-outline" style="font-size: 0.9rem; padding: 8px 20px;">Send Email</a>
-                </div>
-                <div class="glass" style="padding: 40px; text-align: center; border-radius: 20px;">
-                    <i class="material-icons" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;">phone</i>
-                    <h3 style="margin-bottom: 10px;">Call Us</h3>
-                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">+1 (800) 123-4567</p>
-                    <a href="404.html" class="btn btn-outline" style="font-size: 0.9rem; padding: 8px 20px;">Call Now</a>
-                </div>
-                <div class="glass" style="padding: 40px; text-align: center; border-radius: 20px;">
-                    <i class="material-icons" style="font-size: 3rem; color: var(--primary-color); margin-bottom: 15px;">chat</i>
-                    <h3 style="margin-bottom: 10px;">Live Chat</h3>
-                    <p style="color: rgba(255,255,255,0.7); margin-bottom: 15px;">Available 24/7 online</p>
-                    <a href="404.html" class="btn btn-outline" style="font-size: 0.9rem; padding: 8px 20px;">Start Chat</a>
-                </div>
-            </div>
+        <div class="glass-panel">
+          <table class="data-table">
+            <thead>
+              <tr><th>Artwork</th><th>Podcast Title</th><th>Status</th><th>Total Listens</th><th>Actions</th></tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><img src="Images/unsplash_150574042092_91f34414.webp" style="width:40px; border-radius:5px;"></td>
+                <td>Design Patterns in UI/UX</td>
+                <td><span class="status-badge published">Published</span></td>
+                <td>12,450</td>
+                <td><a href="404.html" style="color:var(--primary);">Edit</a></td>
+              </tr>
+              <tr>
+                <td><img src="Images/unsplash_150700321116_8900981a.webp" style="width:40px; border-radius:5px;"></td>
+                <td>Web Development 2024</td>
+                <td><span class="status-badge published">Published</span></td>
+                <td>8,210</td>
+                <td><a href="404.html" style="color:var(--primary);">Edit</a></td>
+              </tr>
+              <tr>
+                <td><img src="Images/unsplash_151167178277_d348d5c3.webp" style="width:40px; border-radius:5px;"></td>
+                <td>CSS Architecture</td>
+                <td><span class="status-badge draft">Draft</span></td>
+                <td>0</td>
+                <td><a href="404.html" style="color:var(--primary);">Edit</a></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
-    </section>
+      </section>
 
-    <!-- SECTION 6: Social Media & Newsletter -->
-    <section class="section-padding">
-        <div class="container">
-            <div class="grid-2">
-                <div>
-                    <h2 style="font-size: 2rem; margin-bottom: 20px;">Connect With Us</h2>
-                    <p style="margin-bottom: 30px; color: rgba(255,255,255,0.7);">Follow us on our social media channels to get real-time updates on new releases, creator interviews, and platform features.</p>
-                    <div style="display: flex; gap: 20px;">
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'"><i class="material-icons">facebook</i></div>
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'"><i class="material-icons">camera_alt</i></div>
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'"><i class="material-icons">play_circle_filled</i></div>
-                        <div style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.05); display: flex; align-items: center; justify-content: center; cursor: pointer; transition: var(--transition);" onmouseover="this.style.background='var(--primary-color)'" onmouseout="this.style.background='rgba(255,255,255,0.05)'"><i class="material-icons">share</i></div>
-                    </div>
-                </div>
-                <div class="glass" style="padding: 40px; border-radius: 20px;">
-                    <h2 style="font-size: 1.8rem; margin-bottom: 15px;">Join our Newsletter</h2>
-                    <p style="margin-bottom: 25px; color: rgba(255,255,255,0.7);">Never miss a beat. Get the best of PodStream delivered directly to your inbox every Friday.</p>
-                    <form action="404.html" method="GET" style="display: flex; flex-direction: column; gap: 15px;">
-                        <input type="email" name="email" placeholder="Your Email Address" required style="padding: 15px; border-radius: 50px; border: 1px solid rgba(255,255,255,0.1); background: rgba(255,255,255,0.05); color: #fff; outline: none;">
-                        <button type="submit" class="btn btn-primary">Subscribe Now</button>
-                    </form>
-                </div>
-            </div>
+      <!-- ================= FAVORITES ================= -->
+      <section id="sec-favorites" class="spa-section">
+        <div class="sec-head"><h2>Your Favourites</h2></div>
+        <div class="content-grid">
+          <div class="content-card">
+            <img src="Images/unsplash_146189683693_4de20af1.webp" class="c-img">
+            <div class="c-title">Creative Thinking</div><div class="c-sub">By Sarah Mitchell</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_148998770702_aa31d067.webp" class="c-img">
+            <div class="c-title">Deep Space Radio</div><div class="c-sub">By Neil Tyson</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_149479010837_b95a84ba.webp" class="c-img">
+            <div class="c-title">True Crime Tales</div><div class="c-sub">By Alex Rivera</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_149975031010_231501d3.webp" class="c-img">
+            <div class="c-title">History Daily</div><div class="c-sub">By Dr. Carter</div>
+          </div>
         </div>
-    </section>
+      </section>
 
-    <!-- FOOTER -->
-    <!-- ===== SHARED FOOTER ===== -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-grid">
-                <div class="fade-up-element">
-                    <a href="index.html" class="footer-logo" style="display:flex;align-items:center;"><img src="logo-removebg-preview.webp" class="static-logo" alt="PodStream"></a>
-                    <p class="footer-text">The premium destination for audio and video podcasts. Experience crystal clear streaming and discover your next favorite creator.</p>
-                    <div class="social-links">
-                        <a href="404.html"><i class="material-icons">podcasts</i></a>
-                        <a href="404.html"><i class="material-icons">mic</i></a>
-                        <a href="404.html"><i class="material-icons">headphones</i></a>
-                        <a href="404.html"><i class="material-icons">rss_feed</i></a>
-                    </div>
-                </div>
-                <div>
-                    <h4>Quick Links</h4>
-                    <ul class="footer-links">
-                        <li><a href="index.html">Home</a></li>
-                        <li><a href="podcasts.html">Podcasts</a></li>
-                        <li><a href="video-podcasts.html">Video Podcasts</a></li>
-                        <li><a href="about.html">About</a></li>
-                        <li><a href="discover.html">Discover</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Support</h4>
-                    <ul class="footer-links">
-                        <li><a href="404.html">Contact Us</a></li>
-                        <li><a href="404.html">Help Center</a></li>
-                        <li><a href="404.html">Privacy Policy</a></li>
-                        <li><a href="404.html">Terms &amp; Conditions</a></li>
-                    </ul>
-                </div>
-                <div>
-                    <h4>Newsletter</h4>
-                    <p class="footer-text">Get weekly recommendations.</p>
-                    <form class="newsletter-form" action="404.html" method="GET">
-                        <input type="email" name="email" placeholder="Email" required>
-                        <button type="submit" class="btn btn-primary" style="padding: 10px 15px;"><i class="material-icons">send</i></button>
-                    </form>
-                </div>
-            </div>
-            <div class="footer-bottom">
-                <p>&copy; 2026 Stackly. All rights reserved. Designed for Premium Listening.</p>
-            </div>
+      <!-- ================= PLAYLISTS ================= -->
+      <section id="sec-playlists" class="spa-section">
+        <div class="sec-head"><h2>Your Playlists</h2><button class="btn-primary" onclick="window.location.href='404.html'">+ Create Playlist</button></div>
+        <div class="content-grid">
+          <div class="content-card playlist-card" style="background:linear-gradient(135deg,rgba(168,91,216,0.3),rgba(31,36,48,0.8));">
+            <span class="material-icons">morning</span>
+            <div class="c-title">Morning Drive</div>
+            <div class="c-sub">24 Episodes</div>
+          </div>
+          <div class="content-card playlist-card" style="background:linear-gradient(135deg,rgba(52,211,153,0.3),rgba(31,36,48,0.8));">
+            <span class="material-icons">fitness_center</span>
+            <div class="c-title">Workout Mix</div>
+            <div class="c-sub">12 Episodes</div>
+          </div>
+          <div class="content-card playlist-card" style="background:linear-gradient(135deg,rgba(251,191,36,0.3),rgba(31,36,48,0.8));">
+            <span class="material-icons">bedtime</span>
+            <div class="c-title">Sleep Sounds</div>
+            <div class="c-sub">8 Episodes</div>
+          </div>
         </div>
-    </footer>
+      </section>
 
-    <!-- Scripts -->
-    <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+      <!-- ================= VIDEOS ================= -->
+      <section id="sec-videos" class="spa-section">
+        <div class="sec-head"><h2>Video Podcasts</h2></div>
+        <div class="content-grid">
+          <div class="content-card" style="position:relative;">
+            <img src="Images/unsplash_151632149748_ad5da2cf.webp" class="c-img c-img-video">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Live Interview: Elon Musk</div>
+            <div class="c-sub">2h 15m • 1.2M Views</div>
+          </div>
+          <div class="content-card" style="position:relative;">
+            <img src="Images/unsplash_151824135333_6abe6b24.webp" class="c-img c-img-video">
+            <span class="material-icons" onclick="window.location.href='404.html'" style="position:absolute; top:40%; left:50%; transform:translate(-50%,-50%); font-size:40px; color:#fff; text-shadow:0 2px 10px rgba(0,0,0,0.5); cursor:pointer;">play_circle</span>
+            <div class="c-title">Studio Session: Music Prod.</div>
+            <div class="c-sub">45m • 300K Views</div>
+          </div>
+        </div>
+      </section>
 
-    <script src="js/script.js"></script>
+      <!-- ================= DISCOVER ================= -->
+      <section id="sec-discover" class="spa-section">
+        <div class="sec-head"><h2>Discover Categories</h2></div>
+        <div class="tags-row">
+          <div class="tag-pill active" onclick="window.location.href='404.html'">All</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">Technology</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">True Crime</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">Comedy</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">Business</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">Health & Fitness</div>
+          <div class="tag-pill" onclick="window.location.href='404.html'">News</div>
+        </div>
+        <div class="content-grid">
+          <div class="content-card">
+            <img src="Images/unsplash_153174602079_f1d6d2b3.webp" class="c-img">
+            <div class="c-title">AI Revolution</div><div class="c-sub">Trending #1</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_1550745165-9_a87cdbc2.webp" class="c-img">
+            <div class="c-title">Startup Hustle</div><div class="c-sub">New this week</div>
+          </div>
+          <div class="content-card">
+            <img src="Images/unsplash_156759638875_7e57ea7a.webp" class="c-img">
+            <div class="c-title">Daily Meditations</div><div class="c-sub">Editors' Pick</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SUBSCRIPTION ================= -->
+      <section id="sec-subscription" class="spa-section">
+        <div class="sec-head"><h2>Your Subscription</h2></div>
+        <div class="glass-panel" style="max-width: 700px; display: flex; flex-direction: column; gap: 20px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; padding-bottom:15px; border-bottom:1px solid rgba(255,255,255,0.1);">
+            <div>
+              <h3 style="color:var(--primary); margin-bottom:5px;">Premium Plan</h3>
+              <p style="font-size:0.85rem; color:rgba(255,255,255,0.6);">Unlimited listening, ad-free experience, and offline downloads.</p>
+            </div>
+            <div style="font-size:1.5rem; font-weight:700;">$9.99<span style="font-size:0.8rem; color:gray;">/mo</span></div>
+          </div>
+          <div style="display:flex; justify-content:space-between; align-items:center;">
+            <div>
+              <div style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:5px;">Next Billing Date</div>
+              <div style="font-weight:600;">August 15, 2024</div>
+            </div>
+            <div>
+              <div style="font-size:0.85rem; color:rgba(255,255,255,0.6); margin-bottom:5px;">Payment Method</div>
+              <div style="font-weight:600; display:flex; align-items:center; gap:5px;"><i class="material-icons" style="font-size:1rem;">credit_card</i> **** 4242</div>
+            </div>
+          </div>
+          <div style="display:flex; gap:15px; margin-top:10px;">
+            <button class="btn-primary" style="flex:1;" onclick="window.location.href='404.html'">Update Payment Method</button>
+            <button class="btn-primary" style="flex:1; background:rgba(255,255,255,0.1); color:#fff;" onclick="window.location.href='404.html'">Cancel Subscription</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SETTINGS ================= -->
+      <section id="sec-settings" class="spa-section">
+        <div class="sec-head"><h2>Account Settings</h2><button class="btn-primary" onclick="window.location.href='404.html'">Save Changes</button></div>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+          <!-- Left Column -->
+          <div class="glass-panel">
+            <h3 style="margin-bottom:15px; font-size:1.1rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Personal Profile</h3>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">Profile Picture</label>
+              <div style="display: flex; align-items: center; gap: 15px;">
+                <div style="width: 60px; height: 60px; border-radius: 50%; background: var(--primary); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; font-weight: bold;">JD</div>
+                <button class="btn-primary" style="background: rgba(255,255,255,0.1); color: white;" onclick="window.location.href='404.html'">Change Avatar</button>
+              </div>
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">Full Name</label>
+              <input type="text" class="form-control" value="John Doe" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">Email Address</label>
+              <input type="email" class="form-control" value="john@podstream.com" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+            </div>
+            <div class="form-group" style="margin-bottom: 15px;">
+              <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">Bio</label>
+              <textarea class="form-control" rows="4" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white; resize: vertical;">Avid podcast listener and occasional creator.</textarea>
+            </div>
+          </div>
+
+          <!-- Right Column -->
+          <div style="display: flex; flex-direction: column; gap: 20px;">
+            <div class="glass-panel">
+              <h3 style="margin-bottom:15px; font-size:1.1rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Security</h3>
+              <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">Current Password</label>
+                <input type="password" class="form-control" placeholder="••••••••" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+              </div>
+              <div class="form-group" style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-size:0.85rem; color:rgba(255,255,255,0.7);">New Password</label>
+                <input type="password" class="form-control" placeholder="New Password" style="width: 100%; padding: 10px; background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; color: white;">
+              </div>
+              <button class="btn-primary" style="background: rgba(168,91,216,0.3); border: 1px solid var(--primary); width: 100%;" onclick="window.location.href='404.html'">Update Password</button>
+            </div>
+
+            <div class="glass-panel">
+              <h3 style="margin-bottom:15px; font-size:1.1rem; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:10px;">Notifications & Preferences</h3>
+              <div class="form-group" style="display:flex; align-items:center; justify-content: space-between; margin-bottom:15px;">
+                <label style="margin-bottom:0; font-size: 0.9rem;">Email notifications for new episodes</label>
+                <input type="checkbox" checked style="width:18px;height:18px; accent-color: var(--primary);">
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; justify-content: space-between; margin-bottom:15px;">
+                <label style="margin-bottom:0; font-size: 0.9rem;">Weekly listening summary</label>
+                <input type="checkbox" checked style="width:18px;height:18px; accent-color: var(--primary);">
+              </div>
+              <div class="form-group" style="display:flex; align-items:center; justify-content: space-between;">
+                <label style="margin-bottom:0; font-size: 0.9rem;">High quality audio stream (Data heavy)</label>
+                <input type="checkbox" style="width:18px;height:18px; accent-color: var(--primary);">
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const userData = localStorage.getItem('podstream_user');
+        if (userData) {
+            try {
+                const user = JSON.parse(userData);
+                if (user.username) {
+                    const unameEl = document.querySelector('.user-info .uname');
+                    if (unameEl) unameEl.textContent = user.username;
+                    
+                    const initials = user.username.split(' ').map(n => n[0]).join('').substring(0,2).toUpperCase();
+                    document.querySelectorAll('.user-ava, .topbar-ava').forEach(el => el.textContent = initials);
+                }
+                if (user.email) {
+                    const uemailEl = document.querySelector('.user-info .uemail');
+                    if (uemailEl) uemailEl.textContent = user.email;
+                }
+            } catch (e) {}
+        }
+    });
+
+    function showSection(sectionId, title, clickedElement) {
+        document.querySelectorAll('.spa-section').forEach(sec => sec.classList.remove('active'));
+        document.getElementById('sec-' + sectionId).classList.add('active');
+        document.getElementById('topbar-title-text').innerText = title;
+        if (clickedElement) {
+            document.querySelectorAll('.sidebar-nav .nav-link:not(.logout), .bottom-nav .bnav-link').forEach(link => link.classList.remove('active'));
+            clickedElement.classList.add('active');
+        }
+        // Auto-close sidebar on mobile
+        if(window.innerWidth <= 768) toggleSidebar(false);
+    }
+
+    function toggleSidebar(forceState) {
+        const sidebar = document.getElementById('sidebar');
+        const overlay = document.querySelector('.sidebar-overlay');
+        const menuIcon = document.querySelector('.menu-toggle .material-icons');
+        const isOpen = sidebar.classList.contains('open');
+        
+        if(forceState === false || isOpen) {
+            sidebar.classList.remove('open');
+            overlay.classList.remove('open');
+            if (menuIcon) menuIcon.textContent = 'menu';
+        } else {
+            sidebar.classList.add('open');
+            overlay.classList.add('open');
+            if (menuIcon) menuIcon.textContent = 'close';
+        }
+    }
+  </script>
 </body>
 </html>
