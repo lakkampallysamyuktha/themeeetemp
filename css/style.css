@@ -2216,7 +2216,7 @@ img {
   position: relative;
   overflow: hidden;
   background-image: linear-gradient(rgba(31, 36, 48, 0.82), rgba(31, 36, 48, 0.82)), 
-                    url('../images/unsplash_159060284786_2fc2e320.webp');
+                    url('../Images/unsplash_159060284786_2fc2e320.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed; /* Native parallax effect: background stands still */
@@ -2381,7 +2381,7 @@ img {
   position: relative;
   overflow: hidden;
   background-image: linear-gradient(rgba(31, 36, 48, 0.82), rgba(31, 36, 48, 0.82)), 
-                    url('../images/unsplash_151443232460_13bcd449.webp');
+                    url('../Images/unsplash_151443232460_13bcd449.webp');
   background-size: cover;
   background-position: center;
   background-attachment: fixed; /* Native parallax effect: background stands still */
